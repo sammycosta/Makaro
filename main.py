@@ -15,6 +15,7 @@ for i in range(N):
 letras = ['R', 'L', 'D', 'U', 'X']
 regioes = []
 
+
 def encontra_regioes(row, col):
     '''Faz um parsing onde o resultado no fim das recursões deve ser o dicionário regiões preenchido com
     listas, uma para cada região, onde o primeiro item é o tamanho da região, o segundo é quantas posições
@@ -40,14 +41,17 @@ def encontra_regioes(row, col):
     else:
         encontra_regioes(row, col+1)
 
-encontra_regioes(0, 0)
 
-# Provavelmente mudar a lógica de ver quais números possíveis de preencher no Haskell, 
+encontra_regioes(0, 0)
+num_regioes = len(regioes)
+
+# Provavelmente mudar a lógica de ver quais números possíveis de preencher no Haskell,
 # ou ter um armazenamento disso pra não recalcular
+
 
 def numeros_que_faltam(lista_regiao):
     size = lista_regiao[0]
-    possibilidades = list(range(1,size+1))
+    possibilidades = list(range(1, size+1))
     posicoes_vazias = []
     percorre_lista(possibilidades, posicoes_vazias, lista_regiao[2:])
 
@@ -66,7 +70,6 @@ def percorre_lista(possibilidades, posicoes_vazias, lista):
         percorre_lista(possibilidades, posicoes_vazias, lista[1:])
 
 
-num_regioes = len(regioes)
 def preenche_falta_1(indice):
     if regioes[indice][1] == 1:
         # Verificar qual é o número que falta e qual é a posição
@@ -74,13 +77,45 @@ def preenche_falta_1(indice):
         row, col = posicoes[0]
         matriz_certezas[row][col] = faltam[0]
         regioes[indice][1] -= 1
-        
+
+    if indice+1 < num_regioes-1:
+        # Continua até acabar as regiões. Mudar forma de percorrer para slice?
+        print('chamou!')
+        preenche_falta_1(indice+1)
+
+
+def preenche_falta_2(indice):
+    if regioes[indice][1] == 2:
+        # Verificar qual é o número que falta e qual é a posição
+        faltam, posicoes = numeros_que_faltam(regioes[indice])
+        if (eh_adjacente(posicoes[0], faltam[0])):
+            row1, col1 = posicoes[0]
+            row2, col2 = posicoes[1]
+            matriz_certezas[row1][col1] = faltam[1]
+            matriz_certezas[row2][col2] = faltam[0]
+            regioes[indice][1] -= 2
+        elif (eh_adjacente(posicoes[1], faltam[0])):
+            row1, col1 = posicoes[1]
+            row2, col2 = posicoes[0]
+            matriz_certezas[row1][col1] = faltam[1]
+            matriz_certezas[row2][col2] = faltam[0]
+            regioes[indice][1] -= 2
+        elif (eh_adjacente(posicoes[0], faltam[1])):
+            row1, col1 = posicoes[0]
+            row2, col2 = posicoes[1]
+            matriz_certezas[row1][col1] = faltam[0]
+            matriz_certezas[row2][col2] = faltam[1]
+            regioes[indice][1] -= 2
+        elif (eh_adjacente(posicoes[1], faltam[0])):
+            row1, col1 = posicoes[1]
+            row2, col2 = posicoes[0]
+            matriz_certezas[row1][col1] = faltam[0]
+            matriz_certezas[row2][col2] = faltam[1]
+            regioes[indice][1] -= 2
+
     if indice+1 < num_regioes-1:
         # Continua até acabar as regiões. Mudar forma de percorrer para slice?
         preenche_falta_1(indice+1)
-        
-preenche_falta_1(0)
-
 
 
 # Coisas da primeira vez
@@ -98,17 +133,23 @@ def regiao_2_elementos(i1, j1, i2, j2):
             matriz_certezas[i1][j1] = 1
 
 
-def eh_adjacente(i, j, n):
+def eh_adjacente(posicao, n):
     if i < len(matriz_certezas):
-        if matriz_certezas[i+1][j] == n:
+        if matriz_certezas[posicao[0]+1][posicao[1]] == n:
             return True
     if i > 0:
-        if matriz_certezas[i-1][j] == n:
+        if matriz_certezas[posicao[0]-1][posicao[1]] == n:
             return True
     if j < len(matriz_certezas[0]):
-        if matriz_certezas[i][j+1] == n:
+        if matriz_certezas[posicao[0]][posicao[1]+1] == n:
             return True
     if j > 0:
-        if matriz_certezas[i][j-1] == n:
+        if matriz_certezas[posicao[0]][posicao[1]-1] == n:
             return True
     return False
+
+
+preenche_falta_1(0)
+preenche_falta_2(0)
+for i in matriz_certezas:
+    print(i)
