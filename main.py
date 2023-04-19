@@ -115,7 +115,7 @@ def preenche_falta_2(indice):
 
     if indice+1 < num_regioes-1:
         # Continua até acabar as regiões. Mudar forma de percorrer para slice?
-        preenche_falta_1(indice+1)
+        preenche_falta_2(indice+1)
 
 
 # Coisas da primeira vez
@@ -134,16 +134,16 @@ def regiao_2_elementos(i1, j1, i2, j2):
 
 
 def eh_adjacente(posicao, n):
-    if i < len(matriz_certezas):
+    if posicao[0] < len(matriz_certezas):
         if matriz_certezas[posicao[0]+1][posicao[1]] == n:
             return True
-    if i > 0:
+    if posicao[0] > 0:
         if matriz_certezas[posicao[0]-1][posicao[1]] == n:
             return True
-    if j < len(matriz_certezas[0]):
+    if posicao[1] < len(matriz_certezas[0]):
         if matriz_certezas[posicao[0]][posicao[1]+1] == n:
             return True
-    if j > 0:
+    if posicao[1] > 0:
         if matriz_certezas[posicao[0]][posicao[1]-1] == n:
             return True
     return False
