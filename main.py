@@ -15,7 +15,6 @@ for i in range(N):
 letras = ['R', 'L', 'D', 'U', 'X']
 regioes = []
 
-
 def encontra_regioes(row, col):
     '''Faz um parsing onde o resultado no fim das recursões deve ser o dicionário regiões preenchido com
     listas, uma para cada região, onde o primeiro item é o tamanho da região, o segundo é quantas posições
@@ -43,10 +42,48 @@ def encontra_regioes(row, col):
 
 encontra_regioes(0, 0)
 
-# Checando output da função
-for v in regioes:
-    print(v)
+# Provavelmente mudar a lógica de ver quais números possíveis de preencher no Haskell, 
+# ou ter um armazenamento disso pra não recalcular
 
+def numeros_que_faltam(lista_regiao):
+    size = lista_regiao[0]
+    possibilidades = list(range(1,size+1))
+    posicoes_vazias = []
+    percorre_lista(possibilidades, posicoes_vazias, lista_regiao[2:])
+
+    return possibilidades, posicoes_vazias
+
+
+def percorre_lista(possibilidades, posicoes_vazias, lista):
+    if len(lista) > 0:
+        row, col = lista[0]
+        num = matriz_certezas[row][col]
+        if num != 0:
+            possibilidades.remove(num)
+        else:
+            posicoes_vazias.append((row, col))
+
+        percorre_lista(possibilidades, posicoes_vazias, lista[1:])
+
+
+num_regioes = len(regioes)
+def preenche_falta_1(indice):
+    if regioes[indice][1] == 1:
+        # Verificar qual é o número que falta e qual é a posição
+        faltam, posicoes = numeros_que_faltam(regioes[indice])
+        row, col = posicoes[0]
+        matriz_certezas[row][col] = faltam[0]
+        regioes[indice][1] -= 1
+        
+    if indice+1 < num_regioes-1:
+        # Continua até acabar as regiões. Mudar forma de percorrer para slice?
+        preenche_falta_1(indice+1)
+        
+preenche_falta_1(0)
+
+
+
+# Coisas da primeira vez
 def regiao_2_elementos(i1, j1, i2, j2):
     if matriz_certezas[i1][j1] == 0 and matriz_certezas[i2][j2] == 0:
         pass
