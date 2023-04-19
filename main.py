@@ -13,47 +13,39 @@ for i in range(N):
 
 
 letras = ['R', 'L', 'D', 'U', 'X']
-regioes = {}  # Pensar em como traduzir isso para Haskell -> Criar estrutura dicionário com map?
-visitada = []
+regioes = []
 
 
 def encontra_regioes(row, col):
     '''Faz um parsing onde o resultado no fim das recursões deve ser o dicionário regiões preenchido com
     listas, uma para cada região, onde o primeiro item é o tamanho da região, o segundo é quantas posições
     faltam ser preenchidas e os demais itens são as posições da região.'''
-    if (row, col) in visitada:
-        return
-    visitada.append((row, col))
 
     caracter = matriz_regioes[row][col]
 
     if caracter not in letras:
-        regiao = caracter
-        if regiao not in regioes.keys():
-            regioes[regiao] = [0, 0]  # TAMANHO, FALTA PREENCHER
+        regiao = int(caracter)
+        if regiao > len(regioes):
+            regioes.append([0, 0])  # TAMANHO, FALTA PREENCHER
 
-        regioes[regiao][0] += 1  # Aumenta tamanho
+        regioes[regiao-1][0] += 1  # Aumenta tamanho
         if matriz_certezas[row][col] == 0:
-            regioes[regiao][1] += 1  # Aumenta falta preencher
+            regioes[regiao-1][1] += 1  # Aumenta falta preencher
 
-        regioes[regiao].append((row, col))
+        regioes[regiao-1].append((row, col))
 
-    if row < N-1:
-        encontra_regioes(row+1, col)
-    if row > 0:
-        encontra_regioes(row-1, col)
-    if col < N-1:
+    if col+1 == N:
+        # Fim da linha, passar pra próxima se não acabou as linhas
+        if row+1 != N:
+            encontra_regioes(row+1, 0)
+    else:
         encontra_regioes(row, col+1)
-    if col > 0:
-        encontra_regioes(row, col-1)
-
 
 encontra_regioes(0, 0)
 
 # Checando output da função
-for k, v in regioes.items():
-    print(k, v)
-
+for v in regioes:
+    print(v)
 
 def regiao_2_elementos(i1, j1, i2, j2):
     if matriz_certezas[i1][j1] == 0 and matriz_certezas[i2][j2] == 0:
