@@ -78,9 +78,8 @@ def preenche_falta_1(indice):
         matriz_certezas[row][col] = faltam[0]
         regioes[indice][1] -= 1
 
-    if indice+1 < num_regioes-1:
+    if indice+1 < num_regioes:
         # Continua até acabar as regiões. Mudar forma de percorrer para slice?
-        print('chamou!')
         preenche_falta_1(indice+1)
 
 
@@ -113,24 +112,70 @@ def preenche_falta_2(indice):
             matriz_certezas[row2][col2] = faltam[1]
             regioes[indice][1] -= 2
 
-    if indice+1 < num_regioes-1:
+    if indice+1 < num_regioes:
         # Continua até acabar as regiões. Mudar forma de percorrer para slice?
         preenche_falta_2(indice+1)
 
 
-# Coisas da primeira vez
-def regiao_2_elementos(i1, j1, i2, j2):
-    if matriz_certezas[i1][j1] == 0 and matriz_certezas[i2][j2] == 0:
-        pass
-    else:
-        if matriz_certezas[i1][j1] == 1:
-            matriz_certezas[i2][j2] = 2
-        elif matriz_certezas[i1][j1] == 2:
-            matriz_certezas[i2][j2] = 1
-        elif matriz_certezas[i2][j2] == 1:
-            matriz_certezas[i1][j1] = 2
-        elif matriz_certezas[i2][j2] == 2:
-            matriz_certezas[i1][j1] = 1
+# o maior apontado nunca deve ser 1!
+
+def get_apontado(posicao_seta):
+    if matriz_regioes[posicao_seta[0]][posicao_seta[1]] == 'L':
+        return (posicao_seta[0], posicao_seta[1]-1)
+    if matriz_regioes[posicao_seta[0]][posicao_seta[1]] == 'R':
+        return (posicao_seta[0], posicao_seta[1]+1)
+    if matriz_regioes[posicao_seta[0]][posicao_seta[1]] == 'U':
+        return (posicao_seta[0]-1, posicao_seta[1])
+    if matriz_regioes[posicao_seta[0]][posicao_seta[1]] == 'D':
+        return (posicao_seta[0]+1, posicao_seta[1])
+
+
+def get_lista_redor(posicao_seta, posicao_apontado):
+    lista_redor = []
+    if posicao_seta[0] < (N-1) and (posicao_seta[0]+1, posicao_seta[1]) != posicao_apontado:
+        lista_redor.append(matriz_certezas[posicao_seta[0]+1][posicao_seta[1]])
+    if posicao_seta[0] > 0 and (posicao_seta[0]-1, posicao_seta[1]) != posicao_apontado:
+        lista_redor.append(matriz_certezas[posicao_seta[0]-1][posicao_seta[1]])
+    if posicao_seta[1] < (N-1) and (posicao_seta[0], posicao_seta[1]+1) != posicao_apontado:
+        lista_redor.append(matriz_certezas[posicao_seta[0]][posicao_seta[1]+1])
+    if posicao_seta[1] > 0 and (posicao_seta[0], posicao_seta[1]-1) != posicao_apontado:
+        lista_redor.append(matriz_certezas[posicao_seta[0]][posicao_seta[1]-1])
+    return lista_redor
+
+
+def get_maior(n, lista):
+    if len(lista) > 0:
+        if n > lista[0]:
+            n = get_maior(lista[1:], n)
+        else:
+            n = get_maior(lista[1:], lista[0])
+    return n
+
+
+def verifica_seta_maior(lista_redor):
+    return get_maior(lista_redor[0], lista_redor[1:])
+
+
+def valida_seta(posicao_seta, posicao_num, n):
+    lista_posicoes = get_lista_redor(posicao_seta, posicao_apontado=)
+
+    # # retorna se o número pode ser
+    # def seta_legal(posicao_seta, n):
+
+    # Coisas da primeira vez
+    # def regiao_2_elementos(i1, j1, i2, j2):
+    #     if matriz_certezas[i1][j1] == 0 and matriz_certezas[i2][j2] == 0:
+    #         pass
+    #     else:
+    #         if matriz_certezas[i1][j1] == 1:
+    #             matriz_certezas[i2][j2] = 2
+    #         elif matriz_certezas[i1][j1] == 2:
+    #             matriz_certezas[i2][j2] = 1
+    #         elif matriz_certezas[i2][j2] == 1:
+    #             matriz_certezas[i1][j1] = 2
+    #         elif matriz_certezas[i2][j2] == 2:
+    #             matriz_certezas[i1][j1] = 1
+    #             matriz_certezas[i1][j1] = 1
 
 
 def eh_adjacente(posicao, n):
