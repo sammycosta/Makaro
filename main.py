@@ -1,3 +1,5 @@
+import copy
+
 file = open('puzzle_01.txt', "r")
 
 N = int(file.readline())
@@ -49,67 +51,67 @@ num_regioes = len(regioes)
 # ou ter um armazenamento disso pra não recalcular
 
 
-def numeros_que_faltam(lista_regiao):
+def numeros_que_faltam(lista_regiao, matriz):
     size = lista_regiao[0]
     possibilidades = list(range(1, size+1))
     posicoes_vazias = []
-    percorre_lista(possibilidades, posicoes_vazias, lista_regiao[2:])
+    percorre_lista(possibilidades, posicoes_vazias, lista_regiao[2:], matriz)
 
     return possibilidades, posicoes_vazias
 
 
-def percorre_lista(possibilidades, posicoes_vazias, lista):
+def percorre_lista(possibilidades, posicoes_vazias, lista, matriz):
     if len(lista) > 0:
         row, col = lista[0]
-        num = matriz_certezas[row][col]
+        num = matriz[row][col]
         if num != 0:
             possibilidades.remove(num)
         else:
             posicoes_vazias.append((row, col))
 
-        percorre_lista(possibilidades, posicoes_vazias, lista[1:])
+        percorre_lista(possibilidades, posicoes_vazias, lista[1:], matriz)
 
 
-def preenche_falta_1(indice):
+def preenche_falta_1(indice, matriz):
     if regioes[indice][1] == 1:
         # Verificar qual é o número que falta e qual é a posição
-        faltam, posicoes = numeros_que_faltam(regioes[indice])
+        faltam, posicoes = numeros_que_faltam(regioes[indice], matriz)
         row, col = posicoes[0]
-        matriz_certezas[row][col] = faltam[0]
+        matriz[row][col] = faltam[0]
         regioes[indice][1] -= 1
 
     if indice+1 < num_regioes:
         # Continua até acabar as regiões. Mudar forma de percorrer para slice?
-        preenche_falta_1(indice+1)
+        preenche_falta_1(indice+1, matriz)
 
 
-def preenche_falta_2(indice):
+def preenche_falta_2(indice, matriz):
     if regioes[indice][1] == 2:
         # Verificar qual é o número que falta e qual é a posição
-        faltam, posicoes = numeros_que_faltam(regioes[indice])
-        if (eh_adjacente(posicoes[0], faltam[0])):
+        faltam, posicoes = numeros_que_faltam(regioes[indice], matriz)
+        if (eh_adjacente(posicoes[0], faltam[0], matriz)):
             row1, col1 = posicoes[0]
             row2, col2 = posicoes[1]
-            matriz_certezas[row1][col1] = faltam[1]
-            matriz_certezas[row2][col2] = faltam[0]
+            matriz[row1][col1] = faltam[1]
+            matriz[row2][col2] = faltam[0]
             regioes[indice][1] -= 2
-        elif (eh_adjacente(posicoes[1], faltam[0])):
+        elif (eh_adjacente(posicoes[1], faltam[0], matriz)):
             row1, col1 = posicoes[1]
             row2, col2 = posicoes[0]
-            matriz_certezas[row1][col1] = faltam[1]
-            matriz_certezas[row2][col2] = faltam[0]
+            matriz[row1][col1] = faltam[1]
+            matriz[row2][col2] = faltam[0]
             regioes[indice][1] -= 2
-        elif (eh_adjacente(posicoes[0], faltam[1])):
+        elif (eh_adjacente(posicoes[0], faltam[1], matriz)):
             row1, col1 = posicoes[0]
             row2, col2 = posicoes[1]
-            matriz_certezas[row1][col1] = faltam[0]
-            matriz_certezas[row2][col2] = faltam[1]
+            matriz[row1][col1] = faltam[0]
+            matriz[row2][col2] = faltam[1]
             regioes[indice][1] -= 2
-        elif (eh_adjacente(posicoes[1], faltam[0])):
+        elif (eh_adjacente(posicoes[1], faltam[0], matriz)):
             row1, col1 = posicoes[1]
             row2, col2 = posicoes[0]
-            matriz_certezas[row1][col1] = faltam[0]
-            matriz_certezas[row2][col2] = faltam[1]
+            matriz[row1][col1] = faltam[0]
+            matriz[row2][col2] = faltam[1]
             regioes[indice][1] -= 2
         # else:
         #     setas = setas_em_volta(posicoes[0])
@@ -117,7 +119,7 @@ def preenche_falta_2(indice):
 
     if indice+1 < num_regioes:
         # Continua até acabar as regiões. Mudar forma de percorrer para slice?
-        preenche_falta_2(indice+1)
+        preenche_falta_2(indice+1, matriz)
 
 
 # o maior apontado nunca deve ser 1!
@@ -213,23 +215,83 @@ def setas_em_volta(posicao_numero):
     #             matriz_certezas[i1][j1] = 1
 
 
-def eh_adjacente(posicao, n):
-    if posicao[0] < len(matriz_certezas):
-        if matriz_certezas[posicao[0]+1][posicao[1]] == n:
+def eh_adjacente(posicao, n, matriz):
+    if posicao[0] < len(matriz):
+        if matriz[posicao[0]+1][posicao[1]] == n:
             return True
     if posicao[0] > 0:
-        if matriz_certezas[posicao[0]-1][posicao[1]] == n:
+        if matriz[posicao[0]-1][posicao[1]] == n:
             return True
-    if posicao[1] < len(matriz_certezas[0]):
-        if matriz_certezas[posicao[0]][posicao[1]+1] == n:
+    if posicao[1] < len(matriz[0]):
+        if matriz[posicao[0]][posicao[1]+1] == n:
             return True
     if posicao[1] > 0:
-        if matriz_certezas[posicao[0]][posicao[1]-1] == n:
+        if matriz[posicao[0]][posicao[1]-1] == n:
             return True
     return False
 
 
-preenche_falta_1(0)
-preenche_falta_2(0)
+def certezas(matriz):
+    preenche_falta_1(0, matriz)
+    preenche_falta_2(0, matriz)
+
+
+certezas(matriz_certezas)
 for i in matriz_certezas:
     print(i)
+
+matriz_possib = copy.deepcopy(matriz_certezas)
+
+# Inicio backtracking
+
+
+def eh_valida(matriz, num, posicao) -> bool:
+    ''' Checa todas as regras'''
+    pass
+
+
+def preenche_numero(matriz, num, lista_posicoes, lista_regiao) -> bool:
+    '''Tenta preencher um número em todas as posições até conseguir na primeira que achar'''
+    if len(lista_posicoes) < 0:  # Não preencheu em nenhuma posição
+        return False
+
+    row, col = lista_posicoes[0]
+
+    if eh_valida(matriz, num, (row, col)):
+        matriz[row][col] = num
+        lista_regiao[1] -= 1
+        return True
+    else:
+        # Tenta colocar o número na próxima posição
+        return preenche_numero(matriz, num, lista_posicoes[1:], lista_regiao)
+
+
+def preenche_toda_regiao(matriz, num_possiveis, vazias, lista_regiao) -> bool:
+    if len(num_possiveis) < 0 and lista_regiao[1] != 0:
+        return False  # Falhou
+    elif len(num_possiveis) < 0 and lista_regiao[1] == 0:
+        return True  # Regiao toda preenchida
+
+    num = num_possiveis[0]
+
+    if preenche_numero(matriz, num, vazias, lista_regiao, i):
+        # Consegui colocar o número em alguma posição
+        return preenche_toda_regiao(matriz, num_possiveis[1:], vazias, lista_regiao)
+    else:
+        return False
+
+
+def solve_by_regiao(matriz, lista_regioes):
+    if len(lista_regioes) < 0:
+        return
+    regiao = lista_regioes[0]
+    num_possiveis, vazias = numeros_que_faltam(regiao, matriz)
+
+    # representa cada possibilidade (num, posicao) -> como utilizar?
+    lista_possibilidades = [0] * (len(num_possiveis) * len(vazias))
+    caminho = []  # Caminho com todas as ações feitas e aí eu voltaria na "árvore"? Avaliar
+    if preenche_toda_regiao(matriz, num_possiveis, vazias, lista_regioes):
+        matriz = certezas(matriz)
+        return solve_by_regiao(matriz, lista_regioes[1:])
+    else:
+        return False
