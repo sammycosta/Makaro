@@ -151,7 +151,7 @@ def get_lista_redor(posicao_seta, posicao_apontado):
 def get_maior(n, lista):
     if len(lista) > 0:
         if n > lista[0]:
-            n = get_maior(n. lista[1:])
+            n = get_maior(n, lista[1:])
         else:
             n = get_maior(lista[0], lista[1:])
     return n
@@ -222,13 +222,13 @@ def valida_num_pos_setas(matriz, num, posicao) -> bool:
 
 def eh_adjacente(posicao, n, matriz) -> bool:
     ''' Retorna True se um adjacente for igual, False se não'''
-    if posicao[0] < len(matriz):
+    if posicao[0]+1 < len(matriz):
         if matriz[posicao[0]+1][posicao[1]] == n:
             return True
     if posicao[0] > 0:
         if matriz[posicao[0]-1][posicao[1]] == n:
             return True
-    if posicao[1] < len(matriz[0]):
+    if posicao[1]+1 < len(matriz[0]):
         if matriz[posicao[0]][posicao[1]+1] == n:
             return True
     if posicao[1] > 0:
@@ -297,8 +297,14 @@ def preenche_numero(matriz, num, lista_posicoes, lista_regiao) -> tuple[bool, tu
 
 def backtracking_preenche_numero(matriz, num_possiveis, vazias, lista_regiao, possibilidades, caminho):
     num = num_possiveis[0]
+    vazias_possiveis = vazias.copy()
+
+    if len(caminho) > 0 and possibilidades[caminho[-1]][0] == num:
+        vazias_possiveis.remove(possibilidades[caminho[-1]][1])
+        caminho.pop()
+
     conseguiu_preencher, pos = preenche_numero(
-        matriz, num, vazias, lista_regiao)
+        matriz, num, vazias_possiveis, lista_regiao)
 
     if conseguiu_preencher:
         caminho.append(possibilidades.index((num, (pos))))
@@ -312,14 +318,15 @@ def backtracking_preenche_numero(matriz, num_possiveis, vazias, lista_regiao, po
 
         if not preencheu:
             # Continuar a tentar preencher o número mas nas próximas posições
-            caminho.pop()
+            # Limpar preenchimento
             lista_regiao[1] += 1
+            matriz[pos[0]][pos[1]] = 0
             vazias.insert(indice, pos)
             # Voltar: mesmo número, posições após a que já tentei
-            backtracking_preenche_numero(
-                matriz, num_possiveis, vazias[indice:], lista_regiao, possibilidades, caminho)
+            return backtracking_preenche_numero(
+                matriz, num_possiveis, vazias, lista_regiao, possibilidades, caminho)
         else:
-            return
+            return True
     else:
         # Não consegui colocar o número (vai retornar falso pro backtracking anterior)
         return False
@@ -332,17 +339,13 @@ def preenche_toda_regiao(matriz, num_possiveis, vazias, lista_regiao, possibilid
     elif len(num_possiveis) == 0 and lista_regiao[1] == 0:
         return True  # Regiao toda preenchida
 
-    num = num_possiveis[0]
-    conseguiu_preencher, pos = preenche_numero(
-        matriz, num, vazias, lista_regiao)
-
     return backtracking_preenche_numero(
         matriz, num_possiveis, vazias, lista_regiao, possibilidades, caminho)
 
 
 def solve_by_regiao(matriz, lista_regioes):
     if len(lista_regioes) == 0:
-        return
+        return matriz
     regiao = lista_regioes[0]
     num_possiveis, vazias = numeros_que_faltam(regiao, matriz)
     possibilidades = faz_lista_possibilidades(num_possiveis, vazias)
@@ -351,10 +354,12 @@ def solve_by_regiao(matriz, lista_regioes):
         matriz = certezas(matriz)
         return solve_by_regiao(matriz, lista_regioes[1:])
     else:
-        print('\n')
+        print('\n', regiao)
         for i in matriz_possib:
             print(i)
         return False  # Não conseguiu preencher região, problema está antes
 
 
-solve_by_regiao(matriz_possib, regioes)
+matriz = solve_by_regiao(matriz_possib, regioes)
+for i in matriz:
+    print(i)
