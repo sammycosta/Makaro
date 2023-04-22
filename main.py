@@ -122,9 +122,9 @@ def preenche_falta_2(indice, matriz):
         preenche_falta_2(indice+1, matriz)
 
 
-# o maior apontado nunca deve ser 1!
+# o maior apontado nunca deve ser 1! a não ser que não tenha ninguém ao redor da seta além dele
 
-def get_apontado(posicao_seta):
+def get_apontado(posicao_seta) -> tuple[int, int]:
     if matriz_regioes[posicao_seta[0]][posicao_seta[1]] == 'L':
         return (posicao_seta[0], posicao_seta[1]-1)
     if matriz_regioes[posicao_seta[0]][posicao_seta[1]] == 'R':
@@ -161,30 +161,30 @@ def verifica_seta_maior(lista_redor):
     return get_maior(lista_redor[0], lista_redor[1:])
 
 
-# avalia se o número pode ser colocado na posição em função da seta
-def valida_seta(posicao_seta, posicao_num, n):
+def valida_seta(matriz, posicao_seta, posicao_num, n):
+    '''avalia se o número pode ser colocado na posição em função da seta'''
     apontado = get_apontado(posicao_seta)
     if apontado == posicao_num:
         lista_posicoes = get_lista_redor(posicao_seta, posicao_num)
         if n > verifica_seta_maior(lista_posicoes):
             return True
     else:
-        if matriz_certezas[apontado[0]][apontado[1]] > 0:
-            if n < matriz_certezas[apontado[0]][apontado[1]]:
+        if matriz[apontado[0]][apontado[1]] > 0:
+            if n < matriz[apontado[0]][apontado[1]]:
                 return True
             else:
                 return False
         return True
 
 
-def eh_seta(posicao):
+def eh_seta(posicao) -> bool:
     return (matriz_regioes[posicao[0]][posicao[1]] == 'L' or
             matriz_regioes[posicao[0]][posicao[1]] == 'R' or
             matriz_regioes[posicao[0]][posicao[1]] == 'U' or
             matriz_regioes[posicao[0]][posicao[1]] == 'D')
 
 
-def setas_em_volta(posicao_numero):
+def setas_em_volta(posicao_numero) -> list[tuple[int, int]]:
     lista_setas = []
     if posicao_numero[0] < (N-1) and eh_seta((posicao_numero[0]+1, posicao_numero[1])):
         lista_setas.append(
@@ -199,23 +199,28 @@ def setas_em_volta(posicao_numero):
         lista_setas.append(
             (posicao_numero[0], posicao_numero[1]-1))
 
-    # Coisas da primeira vez
-    # def regiao_2_elementos(i1, j1, i2, j2):
-    #     if matriz_certezas[i1][j1] == 0 and matriz_certezas[i2][j2] == 0:
-    #         pass
-    #     else:
-    #         if matriz_certezas[i1][j1] == 1:
-    #             matriz_certezas[i2][j2] = 2
-    #         elif matriz_certezas[i1][j1] == 2:
-    #             matriz_certezas[i2][j2] = 1
-    #         elif matriz_certezas[i2][j2] == 1:
-    #             matriz_certezas[i1][j1] = 2
-    #         elif matriz_certezas[i2][j2] == 2:
-    #             matriz_certezas[i1][j1] = 1
-    #             matriz_certezas[i1][j1] = 1
+    return lista_setas
 
 
-def eh_adjacente(posicao, n, matriz):
+def valida_em_setas(matriz, num, posicao, setas_em_volta) -> bool:
+    ''' chama a função valida_seta para todas setas ao redor da posicao'''
+    if len(setas_em_volta) == 0:
+        return True
+
+    seta = setas_em_volta[0]
+    if valida_seta(matriz, seta, posicao, num):
+        return valida_em_setas(matriz, num, posicao, setas_em_volta[1:])
+    else:
+        return False  # uma não é valida já
+
+
+def valida_num_pos_setas(matriz, num, posicao) -> bool:
+    '''Dado um número e uma posição, retorna se é válido colocar ele ali em função das setas ao redor da posição.'''
+    setas_em_volta = setas_em_volta(posicao)
+
+
+def eh_adjacente(posicao, n, matriz) -> bool:
+    ''' Retorna True se um adjacente for igual, False se não'''
     if posicao[0] < len(matriz):
         if matriz[posicao[0]+1][posicao[1]] == n:
             return True
@@ -247,12 +252,12 @@ matriz_possib = copy.deepcopy(matriz_certezas)
 
 def eh_valida(matriz, num, posicao) -> bool:
     ''' Checa todas as regras'''
-    pass
+    return (not eh_adjacente(posicao, num, matriz)) and valida_num_pos_setas(matriz, num, posicao)
 
 
 def preenche_numero(matriz, num, lista_posicoes, lista_regiao) -> tuple[bool, tuple[int, int]]:
     '''Tenta preencher um número em todas as posições até conseguir na primeira que achar'''
-    if len(lista_posicoes) < 0:  # Não preencheu em nenhuma posição
+    if len(lista_posicoes) == 0:  # Não preencheu em nenhuma posição
         return False, (-1, -1)
 
     row, col = lista_posicoes[0]
@@ -267,9 +272,9 @@ def preenche_numero(matriz, num, lista_posicoes, lista_regiao) -> tuple[bool, tu
 
 
 def preenche_toda_regiao(matriz, num_possiveis, vazias, lista_regiao) -> bool:
-    if len(num_possiveis) < 0 and lista_regiao[1] != 0:
+    if len(num_possiveis) == 0 and lista_regiao[1] != 0:
         return False  # Falhou
-    elif len(num_possiveis) < 0 and lista_regiao[1] == 0:
+    elif len(num_possiveis) == 0 and lista_regiao[1] == 0:
         return True  # Regiao toda preenchida
 
     num = num_possiveis[0]
@@ -285,7 +290,7 @@ def preenche_toda_regiao(matriz, num_possiveis, vazias, lista_regiao) -> bool:
 
 
 def solve_by_regiao(matriz, lista_regioes):
-    if len(lista_regioes) < 0:
+    if len(lista_regioes) == 0:
         return
     regiao = lista_regioes[0]
     num_possiveis, vazias = numeros_que_faltam(regiao, matriz)
