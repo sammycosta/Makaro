@@ -111,6 +111,9 @@ def preenche_falta_2(indice):
             matriz_certezas[row1][col1] = faltam[0]
             matriz_certezas[row2][col2] = faltam[1]
             regioes[indice][1] -= 2
+        # else:
+        #     setas = setas_em_volta(posicoes[0])
+        #     if len(setas) > 0:
 
     if indice+1 < num_regioes:
         # Continua até acabar as regiões. Mudar forma de percorrer para slice?
@@ -156,11 +159,43 @@ def verifica_seta_maior(lista_redor):
     return get_maior(lista_redor[0], lista_redor[1:])
 
 
+# avalia se o número pode ser colocado na posição em função da seta
 def valida_seta(posicao_seta, posicao_num, n):
-    lista_posicoes = get_lista_redor(posicao_seta, posicao_apontado=)
+    apontado = get_apontado(posicao_seta)
+    if apontado == posicao_num:
+        lista_posicoes = get_lista_redor(posicao_seta, posicao_num)
+        if n > verifica_seta_maior(lista_posicoes):
+            return True
+    else:
+        if matriz_certezas[apontado[0]][apontado[1]] > 0:
+            if n < matriz_certezas[apontado[0]][apontado[1]]:
+                return True
+            else:
+                return False
+        return True
 
-    # # retorna se o número pode ser
-    # def seta_legal(posicao_seta, n):
+
+def eh_seta(posicao):
+    return (matriz_regioes[posicao[0]][posicao[1]] == 'L' or
+            matriz_regioes[posicao[0]][posicao[1]] == 'R' or
+            matriz_regioes[posicao[0]][posicao[1]] == 'U' or
+            matriz_regioes[posicao[0]][posicao[1]] == 'D')
+
+
+def setas_em_volta(posicao_numero):
+    lista_setas = []
+    if posicao_numero[0] < (N-1) and eh_seta((posicao_numero[0]+1, posicao_numero[1])):
+        lista_setas.append(
+            (posicao_numero[0]+1, posicao_numero[1]))
+    if posicao_numero[0] > 0 and eh_seta((posicao_numero[0]-1, posicao_numero[1])):
+        lista_setas.append(
+            (posicao_numero[0]-1, posicao_numero[1]))
+    if posicao_numero[1] < (N-1) and eh_seta((posicao_numero[0], posicao_numero[1]+1)):
+        lista_setas.append(
+            (posicao_numero[0], posicao_numero[1]+1))
+    if posicao_numero[1] > 0 and eh_seta((posicao_numero[0], posicao_numero[1]-1)):
+        lista_setas.append(
+            (posicao_numero[0], posicao_numero[1]-1))
 
     # Coisas da primeira vez
     # def regiao_2_elementos(i1, j1, i2, j2):

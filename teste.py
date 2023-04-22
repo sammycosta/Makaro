@@ -13,3 +13,6 @@ def get_maior(n, lista):
 lista = [9, 33, 65, 31]
 
 print(get_maior(lista[0], lista[1:]))
+a = (0, 9)
+b = (0, 9)
+print(a == b)
