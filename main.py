@@ -252,6 +252,30 @@ matriz_possib = copy.deepcopy(matriz_certezas)
 # Inicio backtracking
 
 
+def posicao_numero(num, posicoes_possiveis, possibilidades):
+    ''' junta o número com todas posicoes '''
+    if len(posicoes_possiveis) == 0:
+        return
+
+    posicao = posicoes_possiveis[0]
+    possibilidades.append((num, posicao))
+    posicao_numero(num, posicoes_possiveis[1:], possibilidades)
+
+
+def numero_posicao(num_possiveis, posicoes_possiveis, possibilidades):
+    if len(num_possiveis) == 0:
+        return
+    num = num_possiveis[0]
+    posicao_numero(num, posicoes_possiveis, possibilidades)
+    numero_posicao(num_possiveis[1:], posicoes_possiveis, possibilidades)
+
+
+def faz_lista_possibilidades(num_possiveis, posicoes_possiveis):
+    possibilidades = []
+    numero_posicao(num_possiveis, posicoes_possiveis, possibilidades)
+    return possibilidades
+
+
 def eh_valida(matriz, num, posicao) -> bool:
     ''' Checa todas as regras'''
     return (not eh_adjacente(posicao, num, matriz)) and valida_num_pos_setas(matriz, num, posicao)
@@ -261,9 +285,7 @@ def preenche_numero(matriz, num, lista_posicoes, lista_regiao) -> tuple[bool, tu
     '''Tenta preencher um número em todas as posições até conseguir na primeira que achar'''
     if len(lista_posicoes) == 0:  # Não preencheu em nenhuma posição
         return False, (-1, -1)
-
     row, col = lista_posicoes[0]
-
     if eh_valida(matriz, num, (row, col)):
         matriz[row][col] = num
         lista_regiao[1] -= 1
@@ -273,22 +295,49 @@ def preenche_numero(matriz, num, lista_posicoes, lista_regiao) -> tuple[bool, tu
         return preenche_numero(matriz, num, lista_posicoes[1:], lista_regiao)
 
 
-def preenche_toda_regiao(matriz, num_possiveis, vazias, lista_regiao) -> bool:
+def backtracking_preenche_numero(matriz, num_possiveis, vazias, lista_regiao, possibilidades, caminho):
+    num = num_possiveis[0]
+    conseguiu_preencher, pos = preenche_numero(
+        matriz, num, vazias, lista_regiao)
+
+    if conseguiu_preencher:
+        caminho.append(possibilidades.index((num, (pos))))
+        print(caminho)
+        indice = vazias.index(pos)
+        vazias.pop(indice)  # Posição já preenchida
+
+        # Continua para os outros números
+        preencheu = preenche_toda_regiao(
+            matriz, num_possiveis[1:], vazias, lista_regiao, possibilidades, caminho)
+
+        if not preencheu:
+            # Continuar a tentar preencher o número mas nas próximas posições
+            caminho.pop()
+            lista_regiao[1] += 1
+            vazias.insert(indice, pos)
+            # Voltar: mesmo número, posições após a que já tentei
+            backtracking_preenche_numero(
+                matriz, num_possiveis, vazias[indice:], lista_regiao, possibilidades, caminho)
+        else:
+            return
+    else:
+        # Não consegui colocar o número (vai retornar falso pro backtracking anterior)
+        return False
+
+
+def preenche_toda_regiao(matriz, num_possiveis, vazias, lista_regiao, possibilidades, caminho) -> bool:
+    '''itera pela lista de números pra colocar eles em cada posição '''
     if len(num_possiveis) == 0 and lista_regiao[1] != 0:
         return False  # Falhou
     elif len(num_possiveis) == 0 and lista_regiao[1] == 0:
         return True  # Regiao toda preenchida
 
     num = num_possiveis[0]
-
     conseguiu_preencher, pos = preenche_numero(
         matriz, num, vazias, lista_regiao)
 
-    if conseguiu_preencher:
-        vazias.remove(pos)  # Posição já preenchida
-        return preenche_toda_regiao(matriz, num_possiveis[1:], vazias, lista_regiao)
-    else:
-        return False
+    return backtracking_preenche_numero(
+        matriz, num_possiveis, vazias, lista_regiao, possibilidades, caminho)
 
 
 def solve_by_regiao(matriz, lista_regioes):
@@ -296,11 +345,9 @@ def solve_by_regiao(matriz, lista_regioes):
         return
     regiao = lista_regioes[0]
     num_possiveis, vazias = numeros_que_faltam(regiao, matriz)
-
-    # representa cada possibilidade (num, posicao) -> como utilizar?
-    lista_possibilidades = [0] * (len(num_possiveis) * len(vazias))
-    caminho = []  # Caminho com todas as ações feitas e aí eu voltaria na "árvore"? Avaliar
-    if preenche_toda_regiao(matriz, num_possiveis, vazias, regiao):
+    possibilidades = faz_lista_possibilidades(num_possiveis, vazias)
+    caminho = []
+    if preenche_toda_regiao(matriz, num_possiveis, vazias, regiao, possibilidades, caminho):
         matriz = certezas(matriz)
         return solve_by_regiao(matriz, lista_regioes[1:])
     else:
