@@ -151,9 +151,9 @@ def get_lista_redor(posicao_seta, posicao_apontado):
 def get_maior(n, lista):
     if len(lista) > 0:
         if n > lista[0]:
-            n = get_maior(lista[1:], n)
+            n = get_maior(n. lista[1:])
         else:
-            n = get_maior(lista[1:], lista[0])
+            n = get_maior(lista[0], lista[1:])
     return n
 
 
@@ -216,7 +216,8 @@ def valida_em_setas(matriz, num, posicao, setas_em_volta) -> bool:
 
 def valida_num_pos_setas(matriz, num, posicao) -> bool:
     '''Dado um número e uma posição, retorna se é válido colocar ele ali em função das setas ao redor da posição.'''
-    setas_em_volta = setas_em_volta(posicao)
+    setas = setas_em_volta(posicao)
+    return valida_em_setas(matriz, num, posicao, setas)
 
 
 def eh_adjacente(posicao, n, matriz) -> bool:
@@ -239,6 +240,7 @@ def eh_adjacente(posicao, n, matriz) -> bool:
 def certezas(matriz):
     preenche_falta_1(0, matriz)
     preenche_falta_2(0, matriz)
+    return matriz
 
 
 certezas(matriz_certezas)
@@ -280,7 +282,7 @@ def preenche_toda_regiao(matriz, num_possiveis, vazias, lista_regiao) -> bool:
     num = num_possiveis[0]
 
     conseguiu_preencher, pos = preenche_numero(
-        matriz, num, vazias, lista_regiao, i)
+        matriz, num, vazias, lista_regiao)
 
     if conseguiu_preencher:
         vazias.remove(pos)  # Posição já preenchida
@@ -298,8 +300,14 @@ def solve_by_regiao(matriz, lista_regioes):
     # representa cada possibilidade (num, posicao) -> como utilizar?
     lista_possibilidades = [0] * (len(num_possiveis) * len(vazias))
     caminho = []  # Caminho com todas as ações feitas e aí eu voltaria na "árvore"? Avaliar
-    if preenche_toda_regiao(matriz, num_possiveis, vazias, lista_regioes):
+    if preenche_toda_regiao(matriz, num_possiveis, vazias, regiao):
         matriz = certezas(matriz)
         return solve_by_regiao(matriz, lista_regioes[1:])
     else:
-        return False
+        print('\n')
+        for i in matriz_possib:
+            print(i)
+        return False  # Não conseguiu preencher região, problema está antes
+
+
+solve_by_regiao(matriz_possib, regioes)
