@@ -250,17 +250,17 @@ def eh_valida(matriz, num, posicao) -> bool:
     pass
 
 
-def preenche_numero(matriz, num, lista_posicoes, lista_regiao) -> bool:
+def preenche_numero(matriz, num, lista_posicoes, lista_regiao) -> tuple[bool, tuple[int, int]]:
     '''Tenta preencher um número em todas as posições até conseguir na primeira que achar'''
     if len(lista_posicoes) < 0:  # Não preencheu em nenhuma posição
-        return False
+        return False, (-1, -1)
 
     row, col = lista_posicoes[0]
 
     if eh_valida(matriz, num, (row, col)):
         matriz[row][col] = num
         lista_regiao[1] -= 1
-        return True
+        return True, (row, col)
     else:
         # Tenta colocar o número na próxima posição
         return preenche_numero(matriz, num, lista_posicoes[1:], lista_regiao)
@@ -274,8 +274,11 @@ def preenche_toda_regiao(matriz, num_possiveis, vazias, lista_regiao) -> bool:
 
     num = num_possiveis[0]
 
-    if preenche_numero(matriz, num, vazias, lista_regiao, i):
-        # Consegui colocar o número em alguma posição
+    conseguiu_preencher, pos = preenche_numero(
+        matriz, num, vazias, lista_regiao, i)
+
+    if conseguiu_preencher:
+        vazias.remove(pos)  # Posição já preenchida
         return preenche_toda_regiao(matriz, num_possiveis[1:], vazias, lista_regiao)
     else:
         return False
