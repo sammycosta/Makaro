@@ -22,7 +22,6 @@ def encontra_regioes(row, col):
     '''Faz um parsing onde o resultado no fim das recursões deve ser o dicionário regiões preenchido com
     listas, uma para cada região, onde o primeiro item é o tamanho da região, o segundo é quantas posições
     faltam ser preenchidas e os demais itens são as posições da região.'''
-
     caracter = matriz_regioes[row][col]
 
     if caracter not in letras:
@@ -33,7 +32,6 @@ def encontra_regioes(row, col):
         regioes[regiao-1][0] += 1  # Aumenta tamanho
         if matriz_certezas[row][col] == 0:
             regioes[regiao-1][1] += 1  # Aumenta falta preencher
-
         regioes[regiao-1].append((row, col))
 
     if col+1 == N:
@@ -295,26 +293,37 @@ def preenche_numero(matriz, num, lista_posicoes, lista_regiao) -> tuple[bool, tu
         return preenche_numero(matriz, num, lista_posicoes[1:], lista_regiao)
 
 
-def backtracking_preenche_numero(matriz, num_possiveis, vazias, lista_regiao, possibilidades, caminho):
+def remove_itens_da_lista(lista_principal, lista_auxiliar):
+    if len(lista_auxiliar) == 0:
+        return lista_principal
+
+    item = lista_auxiliar[0]
+    lista_principal.remove(item)
+    return remove_itens_da_lista(lista_principal, lista_auxiliar[1:])
+
+
+def backtracking_preenche_numero(matriz, num_possiveis, vazias, lista_regiao, possibilidades, caminho, lista_falhas):
     num = num_possiveis[0]
     vazias_possiveis = vazias.copy()
 
-    if len(caminho) > 0 and possibilidades[caminho[-1]][0] == num:
-        vazias_possiveis.remove(possibilidades[caminho[-1]][1])
-        caminho.pop()
+    # Vou procurar na lista de falhas se, de acordo com a possibilidade "pai",
+    # Existem algumas posições que esse número já causou uma falha então não é possível.
+    ordem = len(caminho)
+    if (ordem > 0 and len(lista_falhas[ordem]) > 0 and lista_falhas[ordem][0] == caminho[-1]) or (ordem == 0 and len(lista_falhas[0]) > 0):
+        vazias_possiveis = remove_itens_da_lista(
+            vazias_possiveis, lista_falhas[ordem][1:])
 
     conseguiu_preencher, pos = preenche_numero(
         matriz, num, vazias_possiveis, lista_regiao)
 
     if conseguiu_preencher:
         caminho.append(possibilidades.index((num, (pos))))
-        print(caminho)
         indice = vazias.index(pos)
         vazias.pop(indice)  # Posição já preenchida
 
         # Continua para os outros números
         preencheu = preenche_toda_regiao(
-            matriz, num_possiveis[1:], vazias, lista_regiao, possibilidades, caminho)
+            matriz, num_possiveis[1:], vazias, lista_regiao, possibilidades, caminho, lista_falhas)
 
         if not preencheu:
             # Continuar a tentar preencher o número mas nas próximas posições
@@ -322,9 +331,31 @@ def backtracking_preenche_numero(matriz, num_possiveis, vazias, lista_regiao, po
             lista_regiao[1] += 1
             matriz[pos[0]][pos[1]] = 0
             vazias.insert(indice, pos)
+
+            ordem = len(caminho) - 1
+            caminho.pop()  # falhou
+            if len(caminho) > 0:
+                # Tem pai no caminho
+                if len(lista_falhas[ordem]) > 0:
+                    if lista_falhas[ordem][0] == caminho[-1]:
+                        # Mesma possibilidade pai, mais uma falha
+                        lista_falhas[ordem].append((pos[0], pos[1]))
+                    else:
+                        # Pai diferente. reseto. avaliar depois se não preciso guardar isso
+                        lista_falhas[ordem] = [caminho[-1], (pos[0], pos[1])]
+                else:
+                    # Primeira falha para esse número com x possibilidade pai
+                    lista_falhas[ordem] = [caminho[-1], (pos[0], pos[1])]
+            else:
+                # é o primeiro
+                if len(lista_falhas[ordem]) > 0:
+                    lista_falhas[ordem].append((pos[0], pos[1]))
+                else:
+                    lista_falhas[ordem] = [-1, (pos[0], pos[1])]
+
             # Voltar: mesmo número, posições após a que já tentei
             return backtracking_preenche_numero(
-                matriz, num_possiveis, vazias, lista_regiao, possibilidades, caminho)
+                matriz, num_possiveis, vazias, lista_regiao, possibilidades, caminho, lista_falhas)
         else:
             return True
     else:
@@ -332,15 +363,16 @@ def backtracking_preenche_numero(matriz, num_possiveis, vazias, lista_regiao, po
         return False
 
 
-def preenche_toda_regiao(matriz, num_possiveis, vazias, lista_regiao, possibilidades, caminho) -> bool:
+def preenche_toda_regiao(matriz, num_possiveis, vazias, lista_regiao, possibilidades, caminho, lista_falhas) -> bool:
     '''itera pela lista de números pra colocar eles em cada posição '''
     if len(num_possiveis) == 0 and lista_regiao[1] != 0:
         return False  # Falhou
     elif len(num_possiveis) == 0 and lista_regiao[1] == 0:
         return True  # Regiao toda preenchida
 
+    # [0] é o caminho pai, o resto é possibilidades falhas praquele caminho pai
     return backtracking_preenche_numero(
-        matriz, num_possiveis, vazias, lista_regiao, possibilidades, caminho)
+        matriz, num_possiveis, vazias, lista_regiao, possibilidades, caminho, lista_falhas)
 
 
 def solve_by_regiao(matriz, lista_regioes):
@@ -350,16 +382,20 @@ def solve_by_regiao(matriz, lista_regioes):
     num_possiveis, vazias = numeros_que_faltam(regiao, matriz)
     possibilidades = faz_lista_possibilidades(num_possiveis, vazias)
     caminho = []
-    if preenche_toda_regiao(matriz, num_possiveis, vazias, regiao, possibilidades, caminho):
+    lista_falhas = [[] for _ in range(len(num_possiveis))]
+    if preenche_toda_regiao(matriz, num_possiveis, vazias, regiao, possibilidades, caminho, lista_falhas):
         matriz = certezas(matriz)
         return solve_by_regiao(matriz, lista_regioes[1:])
     else:
-        print('\n', regiao)
+        print('\n não conseguiu preencher a', regiao)
+        # fazer mais backtracking. Avaliar erros, tá preenchendo errado no puzzle_14 regra das setas
+        # (tá botando 3>3)
         for i in matriz_possib:
             print(i)
         return False  # Não conseguiu preencher região, problema está antes
 
 
 matriz = solve_by_regiao(matriz_possib, regioes)
+print('\n')
 for i in matriz:
     print(i)
