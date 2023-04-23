@@ -1,6 +1,6 @@
 import copy
 
-file = open('puzzle_01.txt', "r")
+file = open('puzzle_14.txt', "r")
 
 N = int(file.readline())
 
@@ -133,16 +133,16 @@ def get_apontado(posicao_seta) -> tuple[int, int]:
         return (posicao_seta[0]+1, posicao_seta[1])
 
 
-def get_lista_redor(posicao_seta, posicao_apontado):
+def get_lista_redor(matriz, posicao_seta, posicao_apontado):
     lista_redor = []
     if posicao_seta[0] < (N-1) and (posicao_seta[0]+1, posicao_seta[1]) != posicao_apontado:
-        lista_redor.append(matriz_certezas[posicao_seta[0]+1][posicao_seta[1]])
+        lista_redor.append(matriz[posicao_seta[0]+1][posicao_seta[1]])
     if posicao_seta[0] > 0 and (posicao_seta[0]-1, posicao_seta[1]) != posicao_apontado:
-        lista_redor.append(matriz_certezas[posicao_seta[0]-1][posicao_seta[1]])
+        lista_redor.append(matriz[posicao_seta[0]-1][posicao_seta[1]])
     if posicao_seta[1] < (N-1) and (posicao_seta[0], posicao_seta[1]+1) != posicao_apontado:
-        lista_redor.append(matriz_certezas[posicao_seta[0]][posicao_seta[1]+1])
+        lista_redor.append(matriz[posicao_seta[0]][posicao_seta[1]+1])
     if posicao_seta[1] > 0 and (posicao_seta[0], posicao_seta[1]-1) != posicao_apontado:
-        lista_redor.append(matriz_certezas[posicao_seta[0]][posicao_seta[1]-1])
+        lista_redor.append(matriz[posicao_seta[0]][posicao_seta[1]-1])
     return lista_redor
 
 
@@ -163,9 +163,10 @@ def valida_seta(matriz, posicao_seta, posicao_num, n):
     '''avalia se o número pode ser colocado na posição em função da seta'''
     apontado = get_apontado(posicao_seta)
     if apontado == posicao_num:
-        lista_posicoes = get_lista_redor(posicao_seta, posicao_num)
+        lista_posicoes = get_lista_redor(matriz, posicao_seta, posicao_num)
         if n > verifica_seta_maior(lista_posicoes):
             return True
+        return False
     else:
         if matriz[apontado[0]][apontado[1]] > 0:
             if n < matriz[apontado[0]][apontado[1]]:
