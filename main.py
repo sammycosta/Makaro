@@ -458,8 +458,7 @@ def clean_regiao(matriz, vazias):
 
 def backtracking(matriz, lista_regioes, caminhos_regioes, lista_erros_regioes):
     ''' para cada região'''
-    i = len(lista_regioes)
-    if i == 0:
+    if len(lista_regioes) == 0:
         # Validar?
         # Checa aqui, então vai voltar loucamente
         return True
@@ -467,7 +466,7 @@ def backtracking(matriz, lista_regioes, caminhos_regioes, lista_erros_regioes):
     caminhos_errados = []
     ordem = len(caminhos_regioes)
     erros_atual = lista_erros_regioes[ordem]
-    if (ordem > 0 and len(erros_atual) > 0 and erros_atual[0] == (i, caminhos_regioes[-1])) or (ordem == 0 and len(erros_atual) > 0):
+    if (ordem > 0 and len(erros_atual) > 0 and erros_atual[0] == caminhos_regioes[-1]) or (ordem == 0 and len(erros_atual) > 0):
         caminhos_errados = erros_atual[1:]
 
     # Tenta preencher uma próxima região
@@ -492,17 +491,17 @@ def backtracking(matriz, lista_regioes, caminhos_regioes, lista_erros_regioes):
                 print('caminho falha', caminho_falha)
                 if len(caminhos_regioes) > 0:
                     if len(lista_erros_regioes[ordem]) > 0:
-                        if lista_erros_regioes[ordem][0] == (i, caminhos_regioes[-1]):
+                        if lista_erros_regioes[ordem][0] == caminhos_regioes[-1]:
                             # Mesma possibilidade pai, mais uma falha
                             lista_erros_regioes[ordem].append(caminho_falha)
                         else:
                             # Pai diferente. reseto.
                             lista_erros_regioes[ordem] = [
-                                (i, caminhos_regioes[-1]), caminho_falha]
+                                caminhos_regioes[-1], caminho_falha]
                     else:
                         # Primeira falha para esse número com x possibilidade pai
                         lista_erros_regioes[ordem] = [
-                            (i, caminhos_regioes[-1]), caminho_falha]
+                            caminhos_regioes[-1], caminho_falha]
                 else:
                     # é o primeiro
                     return False
@@ -511,7 +510,6 @@ def backtracking(matriz, lista_regioes, caminhos_regioes, lista_erros_regioes):
                 return backtracking(matriz, lista_regioes, caminhos_regioes, lista_erros_regioes)
             else:
                 # caminho certeza, n adianta tentar dnv
-                # problema aqui
                 caminhos_regioes.pop()
                 return False
 
