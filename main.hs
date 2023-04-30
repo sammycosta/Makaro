@@ -7,7 +7,7 @@ import ReadPuzzle
 
 main :: IO()
 main = do
-    contents <- readFile "puzzle_01_1.txt"
+    contents <- readFile "puzzle_01.txt"
     print contents
     let list = lines contents
     let size = read (head list) :: Int
