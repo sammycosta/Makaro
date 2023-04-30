@@ -1,6 +1,6 @@
 module Matrix (GenMatrix (Matrix), Position,
                getElement, changeElement, getColumnsNumber, getRowsNumber,
-               addElement) where
+               addElement, deleteFirst, getRow) where
 
 import Data.List
 
@@ -13,11 +13,19 @@ type Position = (Int, Int)
 -- getSize (Matrix []) = (0, 0)
 -- getSize (Matrix mat) = (length mat, length (mat!!0))
 
-getRowsNumber:: GenMatrix t -> Int
+deleteFirst :: [t] -> [t]
+deleteFirst (a:b) = b
+
+getRow :: GenMatrix t -> Int -> [t]
+getRow (Matrix []) _ = error "Empty"
+getRow (Matrix mat) row | row < 0 || row >= length (mat) = error "Index out of bounds"
+                        | otherwise = (mat!!row)
+
+getRowsNumber :: GenMatrix t -> Int
 getRowsNumber (Matrix [[]]) = 0
 getRowsNumber (Matrix mat) = length mat
 
-getColumnsNumber::GenMatrix t -> Int -> Int
+getColumnsNumber :: GenMatrix t -> Int -> Int
 getColumnsNumber (Matrix []) _ = 0
 getColumnsNumber (Matrix mat) row | row < 0 || row >= length (mat) = error "Index out of bounds"
                                   | otherwise = length (mat!!row)

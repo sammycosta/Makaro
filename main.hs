@@ -3,6 +3,7 @@ module Main (main) where
 import Data.List
 import Matrix
 import ReadPuzzle
+import CertainSolutions
 
 
 main :: IO()
@@ -38,7 +39,6 @@ main = do
 
     let regions = (findRegions regionsMatrix certaintyMatrix (Matrix([[]])) (0, 0))
     print regions
+    print (getRow regions 2)
 
-    -- let s = "123"
-    -- let number = stringToInt s
-    -- print (equalInt number)
+    print (missingNumbers (getRow regions 2) certaintyMatrix)

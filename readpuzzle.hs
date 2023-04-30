@@ -1,12 +1,10 @@
-module ReadPuzzle (deleteFirst, getListFromStr, stringToInt, createMatrix, createIntMatrix, 
+module ReadPuzzle (getListFromStr, stringToInt, createMatrix, createIntMatrix, 
                     isLetter, findRegions) where
 
 import Matrix
 
 -- functions to create matrices from text
 
-deleteFirst :: [String] -> [String]
-deleteFirst (a:b) = b
 
 getListFromStr :: String -> [String]
 getListFromStr line = words line
