@@ -315,7 +315,7 @@ def eh_igual_a_algum(valor, lista):
 
 
 def para_todos_caminhos_errados(caminho, caminhos_errados, vazias_possiveis, possibilidades, alterou):
-    '''Verifica se o caminho que a região está seguindo no momento é um que já causou uma falha e 
+    '''Verifica se o caminho que a região está seguindo no momento é um que já causou uma falha e
     retorna uma lista com a possibilidade removida + um booleano se removeu alguma possibilidade'''
 
     if len(caminhos_errados) == 0:
@@ -387,24 +387,17 @@ def backtracking_preenche_numero(matriz, num_possiveis, vazias, lista_regiao, po
             vazias.insert(indice, pos)
             caminho.pop()  # falhou
             ordem = len(caminho)
-            if len(caminho) > 0:
-                if len(lista_falhas[ordem]) > 0:
-                    if lista_falhas[ordem][0] == caminho:
-                        # Mesmo ponto na árvore, mais uma falha
-                        lista_falhas[ordem].append((pos[0], pos[1]))
-                    else:
-                        # Ponto diferente na árvore.
-                        lista_falhas[ordem] = [
-                            caminho.copy(), (pos[0], pos[1])]
-                else:
-                    # Primeira falha para esse número nesse ponto na árvore.
-                    lista_falhas[ordem] = [caminho.copy(), (pos[0], pos[1])]
-            else:
-                # É o primeiro número que está causando a falha
-                if len(lista_falhas[ordem]) > 0:
+            if len(lista_falhas[ordem]) > 0:
+                if lista_falhas[ordem][0] == caminho:
+                    # Mesmo ponto na árvore, mais uma falha
                     lista_falhas[ordem].append((pos[0], pos[1]))
                 else:
-                    lista_falhas[ordem] = [-1, (pos[0], pos[1])]
+                    # Ponto diferente na árvore.
+                    lista_falhas[ordem] = [
+                        caminho.copy(), (pos[0], pos[1])]
+            else:
+                # Primeira falha para esse número nesse ponto na árvore.
+                lista_falhas[ordem] = [caminho.copy(), (pos[0], pos[1])]
 
             # Voltar: mesmo número, posições após a que já tentei
             return backtracking_preenche_numero(
@@ -440,7 +433,6 @@ def solve_by_regiao(matriz, lista_regioes, caminhos_regioes, caminhos_errados, n
     if preenche_toda_regiao(matriz, num_possiveis, vazias, regiao, possibilidades, caminho, lista_falhas, caminhos_errados):
         matriz = certezas(matriz)
         caminhos_regioes.append(caminho)
-
         return True
     else:
         return False  # Não conseguiu preencher região, problema está antes
@@ -488,22 +480,18 @@ def backtracking(matriz, lista_regioes, caminhos_regioes, lista_erros_regioes):
         if not preencheu:
             caminho_falha = caminhos_regioes.pop()
             ordem = len(caminhos_regioes)
-            if len(caminhos_regioes) > 0:
-                if len(lista_erros_regioes[ordem]) > 0:
-                    if lista_erros_regioes[ordem][0] == caminhos_regioes:
-                        # No mesmo ponto da árvore, mais uma falha
-                        lista_erros_regioes[ordem].append(caminho_falha)
-                    else:
-                        # Ponto diferente da árvore. Resetar
-                        lista_erros_regioes[ordem] = [
-                            caminhos_regioes.copy(), caminho_falha]
+            if len(lista_erros_regioes[ordem]) > 0:
+                if lista_erros_regioes[ordem][0] == caminhos_regioes:
+                    # No mesmo ponto da árvore, mais uma falha
+                    lista_erros_regioes[ordem].append(caminho_falha)
                 else:
-                    # Primeira falha para esse número nesse ponto da árvore
+                    # Ponto diferente da árvore. Resetar
                     lista_erros_regioes[ordem] = [
                         caminhos_regioes.copy(), caminho_falha]
             else:
-                # É a primeira região falhando. Não há solução (verificar esse if aqui)
-                return False
+                # Primeira falha para esse número nesse ponto da árvore
+                lista_erros_regioes[ordem] = [
+                    caminhos_regioes.copy(), caminho_falha]
 
             if len(caminho_falha) > 0:
                 matriz = clean_regiao(matriz, vazias_inicio)
