@@ -1,5 +1,5 @@
 module ReadPuzzle (getListFromStr, stringToInt, createMatrix, createIntMatrix, 
-                    isLetter, findRegions) where
+                    isLetter, findRegions, increaseFirst, increaseSecond) where
 
 import Matrix
 

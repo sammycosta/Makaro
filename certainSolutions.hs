@@ -1,4 +1,5 @@
-module CertainSolutions (missingNumbers, iterateList, fillMissingOne) where
+module CertainSolutions (missingNumbers, iterateList, fillMissingOne, getFirst, getSecond,
+                        decreaseFirst, decreaseSecond) where
 
 import Matrix
 import Data.List
