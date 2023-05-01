@@ -1,6 +1,6 @@
 module Matrix (GenMatrix (Matrix), Position,
                getElement, changeElement, getColumnsNumber, getRowsNumber,
-               addElement, deleteFirst, getRow) where
+               addElement, deleteFirst, getRow, printMatrix) where
 
 import Data.List
 
@@ -73,3 +73,17 @@ addElement (Matrix (a:tail)) (row, col) value | row < 0 || col < 0 || row > leng
         getRows (Matrix m) = m
         new_row = (addElementList [] col value)
         
+
+printRow :: Show t => GenMatrix t -> Int -> IO()
+printRow mat i =
+    putStrLn (textRepresentation (getRow mat i))
+    where
+        textRepresentation :: Show t => [t] -> String
+        textRepresentation row = foldl (\acc y -> acc ++ (show y) ++ " ") "" row
+
+
+printMatrix :: Show t => GenMatrix t -> Int -> IO()
+printMatrix mat i
+    | i == 0 = putStrLn "\n" >> printRow mat i >> printMatrix mat (i+1)
+    | i < (getRowsNumber mat) = printRow mat i >> printMatrix mat (i+1)
+    | otherwise = putStrLn "\n"

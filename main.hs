@@ -39,10 +39,11 @@ main = do
 
     let regions = (findRegions regionsMatrix certaintyMatrix (Matrix([[]])) (0, 0))
     print regions
-    print (getRow regions 2)
+    print (getRow certaintyMatrix 2)
+    printMatrix certaintyMatrix 0
 
     -- print (missingNumbers (getRow regions 4) certaintyMatrix)
-    let res = (fillMissingOne 0 (certaintyMatrix, regions))
-    print (res)
-    print ("\n")
-    print (fillMissingTwo 0 res)
+    -- let res = (fillMissingOne 0 (certaintyMatrix, regions))
+    -- print (res)
+    -- print ("\n")
+    -- print (fillMissingTwo 0 res)
