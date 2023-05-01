@@ -41,4 +41,5 @@ main = do
     print regions
     print (getRow regions 2)
 
-    print (missingNumbers (getRow regions 2) certaintyMatrix)
+    -- print (missingNumbers (getRow regions 4) certaintyMatrix)
+    print (fillMissingOne 0 (certaintyMatrix, regions))

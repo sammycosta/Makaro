@@ -9,6 +9,7 @@ matriz_regioes = []
 matriz_certezas = []
 for i in range(N):
     matriz_regioes.append(file.readline().split())
+file.readline()  # \n
 for i in range(N):
     matriz_certezas.append([int(x) for x in file.readline().split()])
 
@@ -314,9 +315,6 @@ def eh_igual_a_algum(valor, lista):
 
 
 def para_todos_caminhos_errados(caminho, caminhos_errados, vazias_possiveis, possibilidades, alterou):
-    '''Verifica se o caminho que a região está seguindo no momento é um que já causou uma falha e
-    retorna uma lista com a possibilidade removida + um booleano se removeu alguma possibilidade'''
-
     if len(caminhos_errados) == 0:
         return vazias_possiveis, alterou
     errado = caminhos_errados[0]
@@ -336,14 +334,12 @@ def backtracking_preenche_numero(matriz, num_possiveis, vazias, lista_regiao, po
     num = num_possiveis[0]
     vazias_possiveis = vazias.copy()
 
+    # Vou procurar na lista de falhas se, de acordo com a possibilidade "pai",
+    # Existem algumas posições que esse número já causou uma falha então não é possível.
     ordem = len(caminho)
-    lista_falhas_atual = lista_falhas[ordem]
-    temErrosAtual = ordem > 0 and len(
-        lista_falhas_atual) > 0 and lista_falhas_atual[0] == caminho
-    primeiroNumeroComErros = ordem == 0 and len(lista_falhas[0]) > 0
-    if temErrosAtual or primeiroNumeroComErros:
+    if (ordem > 0 and len(lista_falhas[ordem]) > 0 and lista_falhas[ordem][0] == caminho[-1]) or (ordem == 0 and len(lista_falhas[0]) > 0):
         vazias_possiveis = remove_itens_da_lista(
-            vazias_possiveis, lista_falhas_atual[1:])
+            vazias_possiveis, lista_falhas[ordem][1:])
 
     conseguiu_preencher, pos = preenche_numero(
         matriz, num, vazias_possiveis, lista_regiao)
@@ -355,7 +351,7 @@ def backtracking_preenche_numero(matriz, num_possiveis, vazias, lista_regiao, po
             caminho, caminhos_errados, vazias_possiveis, possibilidades, False)
 
         if alterou:
-            # limpa preenchimento anterior pra tentar alterar o curso do caminho atual
+            # limpa preenchimento anterior pra tentar de novo
             lista_regiao[1] += 1
             matriz[pos[0]][pos[1]] = 0
             old_pos = pos
@@ -366,7 +362,7 @@ def backtracking_preenche_numero(matriz, num_possiveis, vazias, lista_regiao, po
                 caminho.pop()
                 caminho.append(possibilidades.index((num, (pos))))
             else:
-                # não é possível alterar o caminho nesse ponto. retorna preenchimento antigo
+                # retorna preenchimento antigo
                 pos = old_pos
                 lista_regiao[1] -= 1
                 matriz[pos[0]][pos[1]] = num
@@ -384,19 +380,27 @@ def backtracking_preenche_numero(matriz, num_possiveis, vazias, lista_regiao, po
             lista_regiao[1] += 1
             matriz[pos[0]][pos[1]] = 0
             vazias.insert(indice, pos)
+
+            ordem = len(caminho) - 1
             caminho.pop()  # falhou
-            ordem = len(caminho)
-            if len(lista_falhas[ordem]) > 0:
-                if lista_falhas[ordem][0] == caminho:
-                    # Mesmo ponto na árvore, mais uma falha
+            if len(caminho) > 0:
+                # Tem pai no caminho
+                if len(lista_falhas[ordem]) > 0:
+                    if lista_falhas[ordem][0] == caminho[-1]:
+                        # Mesma possibilidade pai, mais uma falha
+                        lista_falhas[ordem].append((pos[0], pos[1]))
+                    else:
+                        # Pai diferente. reseto. avaliar depois se não preciso guardar isso
+                        lista_falhas[ordem] = [caminho[-1], (pos[0], pos[1])]
+                else:
+                    # Primeira falha para esse número com x possibilidade pai
+                    lista_falhas[ordem] = [caminho[-1], (pos[0], pos[1])]
+            else:
+                # é o primeiro
+                if len(lista_falhas[ordem]) > 0:
                     lista_falhas[ordem].append((pos[0], pos[1]))
                 else:
-                    # Ponto diferente na árvore.
-                    lista_falhas[ordem] = [
-                        caminho.copy(), (pos[0], pos[1])]
-            else:
-                # Primeira falha para esse número nesse ponto na árvore.
-                lista_falhas[ordem] = [caminho.copy(), (pos[0], pos[1])]
+                    lista_falhas[ordem] = [-1, (pos[0], pos[1])]
 
             # Voltar: mesmo número, posições após a que já tentei
             return backtracking_preenche_numero(
@@ -432,8 +436,13 @@ def solve_by_regiao(matriz, lista_regioes, caminhos_regioes, caminhos_errados, n
     if preenche_toda_regiao(matriz, num_possiveis, vazias, regiao, possibilidades, caminho, lista_falhas, caminhos_errados):
         matriz = certezas(matriz)
         caminhos_regioes.append(caminho)
+        print(caminho, regiao, '\n')
+
+        for i in matriz:
+            print(i)
         return True
     else:
+        print('\n não conseguiu preencher a', regiao)
         return False  # Não conseguiu preencher região, problema está antes
 
 
@@ -457,11 +466,7 @@ def backtracking(matriz, lista_regioes, caminhos_regioes, lista_erros_regioes):
     caminhos_errados = []
     ordem = len(caminhos_regioes)
     erros_atual = lista_erros_regioes[ordem]
-
-    primeiraRegiaoComErros = ordem == 0 and len(erros_atual) > 0
-    regiaoAtualComErros = ordem > 0 and len(
-        erros_atual) > 0 and erros_atual[0] == caminhos_regioes
-    if regiaoAtualComErros or primeiraRegiaoComErros:
+    if (ordem > 0 and len(erros_atual) > 0 and erros_atual[0] == caminhos_regioes[-1]) or (ordem == 0 and len(erros_atual) > 0):
         caminhos_errados = erros_atual[1:]
 
     # Tenta preencher uma próxima região
@@ -477,30 +482,37 @@ def backtracking(matriz, lista_regioes, caminhos_regioes, lista_erros_regioes):
             matriz, lista_regioes[1:], caminhos_regioes, lista_erros_regioes)
 
         if not preencheu:
-            caminho_falha = caminhos_regioes.pop()
-            ordem = len(caminhos_regioes)
-            if len(lista_erros_regioes[ordem]) > 0:
-                if lista_erros_regioes[ordem][0] == caminhos_regioes:
-                    # No mesmo ponto da árvore, mais uma falha
-                    lista_erros_regioes[ordem].append(caminho_falha)
-                else:
-                    # Ponto diferente da árvore. Resetar
-                    lista_erros_regioes[ordem] = [
-                        caminhos_regioes.copy(), caminho_falha]
-            else:
-                # Primeira falha para esse número nesse ponto da árvore
-                lista_erros_regioes[ordem] = [
-                    caminhos_regioes.copy(), caminho_falha]
-
-            if len(caminho_falha) > 0:
+            # limpar preenchimento...
+            if len(caminhos_regioes[-1]) > 0:
                 matriz = clean_regiao(matriz, vazias_inicio)
                 lista_regioes[0][1] = len(vazias_inicio)
+                ordem = len(caminhos_regioes) - 1
+                caminho_falha = caminhos_regioes.pop()
+                print('caminho falha', caminho_falha)
+                if len(caminhos_regioes) > 0:
+                    if len(lista_erros_regioes[ordem]) > 0:
+                        if lista_erros_regioes[ordem][0] == caminhos_regioes[-1]:
+                            # Mesma possibilidade pai, mais uma falha
+                            lista_erros_regioes[ordem].append(caminho_falha)
+                        else:
+                            # Pai diferente. reseto.
+                            lista_erros_regioes[ordem] = [
+                                caminhos_regioes[-1], caminho_falha]
+                    else:
+                        # Primeira falha para esse número com x possibilidade pai
+                        lista_erros_regioes[ordem] = [
+                            caminhos_regioes[-1], caminho_falha]
+                else:
+                    # é o primeiro
+                    return False
 
-                # Tentar de novo essa após limpar preenchimento região
+                # Tentar de novo essa região
                 return backtracking(matriz, lista_regioes, caminhos_regioes, lista_erros_regioes)
             else:
-                # Falhou em uma região certeza, não há variação de caminho possível, apenas voltar.
+                # caminho certeza, n adianta tentar dnv
+                caminhos_regioes.pop()
                 return False
+
         else:
             return True
     else:
@@ -511,6 +523,6 @@ caminhos_regioes = []
 lista_erros_regioes = [[] for _ in range(len(regioes))]
 backtracking(matriz_possib, regioes,
              caminhos_regioes, lista_erros_regioes)
-print('\n matriz final:')
+print('\n')
 for i in matriz_possib:
     print(i)
