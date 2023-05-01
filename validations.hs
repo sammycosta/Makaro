@@ -1,8 +1,8 @@
 module Validations (isAdjacent, isValid) where
 
 import Matrix
-import CertainSolutions
 import ReadPuzzle
+import PositionUtils
 
 -- NAO TESTADA botar otherwise Dada uma posição de seta, retorna a posição que ela aponta.
 getAimed :: GenMatrix String -> Position -> Position

@@ -42,4 +42,7 @@ main = do
     print (getRow regions 2)
 
     -- print (missingNumbers (getRow regions 4) certaintyMatrix)
-    print (fillMissingOne 0 (certaintyMatrix, regions))
+    let res = (fillMissingOne 0 (certaintyMatrix, regions))
+    print (res)
+    print ("\n")
+    print (fillMissingTwo 0 res)

@@ -1,22 +1,12 @@
-module CertainSolutions (missingNumbers, iterateList, fillMissingOne, getFirst, getSecond,
-                        decreaseFirst, decreaseSecond) where
+module CertainSolutions (missingNumbers, iterateList, 
+                        fillMissingOne, fillMissingTwo) where
 
-import Matrix
+
 import Data.List
+import Matrix
+import PositionUtils
+import Validations
 
--- Primeiro elemento de uma posição
-getFirst :: Position -> Int
-getFirst (a, _) = a
-
--- Segundo elemento de uma posição
-getSecond :: Position -> Int
-getSecond (_, b) = b
-
-decreaseFirst :: Position -> Position
-decreaseFirst (a, b) = (a-1, b)
-
-decreaseSecond :: Position -> Position
-decreaseSecond (a, b) = (a, b-1)
 
 iterateList :: [Int] -> [Position] -> [Position] -> GenMatrix Int -> ([Int], [Position])
 iterateList possibilities empty_pos list mat =
@@ -35,8 +25,8 @@ missingNumbers :: [Position] -> GenMatrix Int -> ([Int], [Position])
 missingNumbers region_list mat =
     iterateList [1..((getFirst (region_list!!0)))] [] (deleteFirst region_list) mat
 
-fillMat :: Int -> ([Int], [Position]) -> GenMatrix Int -> GenMatrix Position -> (GenMatrix Int, GenMatrix Position)
-fillMat i (missing, positions) mat regions= 
+fillMat1 :: Int -> ([Int], [Position]) -> GenMatrix Int -> GenMatrix Position -> (GenMatrix Int, GenMatrix Position)
+fillMat1 i (missing, positions) mat regions = 
     if (getSecond (getElement regions (i, 0))) == 1 then 
         ((changeElement mat (positions!!0) (missing!!0)), (changeElement regions  (i, 0) (decreaseSecond (getElement regions (i, 0)))))
     else
@@ -50,11 +40,32 @@ fillMissingOne i (mat, regions) =
     else
         missing_num
     where
-        missing_num = (fillMat i (missingNumbers (getRow regions i) mat) mat regions)
+        missing_num = (fillMat1 i (missingNumbers (getRow regions i) mat) mat regions)
 
--- fillMissingTwo :: Int -> (GenMatrix Int, GenMatrix Position) -> (GenMatrix Int, GenMatrix Position)
--- fillMissingTwo i (mat, regions) = 
---     if i+1 < ((getRowsNumber regions)) then
---         fillMissingOne (i+1) missing_num
---     else
---         missing_num
+changeMatrices :: Int -> Int -> Int -> Int -> Int -> ([Int], [Position]) -> GenMatrix Int -> GenMatrix Position -> (GenMatrix Int, GenMatrix Position)
+changeMatrices p1 m1 p2 m2 i (missing, positions) mat regions = 
+    ((changeElement (changeElement mat (positions!!p1) (missing!!m1)) (positions!!p2) (missing!!m2)), 
+        (changeElement regions  (i, 0) (decreaseSecond(decreaseSecond (getElement regions (i, 0))))))
+
+verifications :: Int -> ([Int], [Position]) -> GenMatrix Int -> GenMatrix Position -> (GenMatrix Int, GenMatrix Position)
+verifications i (missing, positions) mat regions
+    | ((isAdjacent mat (missing!!0) (positions!!0)) || (isAdjacent mat (missing!!1) (positions!!1)))= 
+        (changeMatrices 0 1 1 0 i (missing, positions) mat regions)
+    | ((isAdjacent mat (missing!!1) (positions!!0)) || (isAdjacent mat (missing!!0) (positions!!1))) =
+        (changeMatrices 1 1 0 0 i (missing, positions) mat regions)
+    | otherwise = (mat, regions)
+
+fillMat2 :: Int -> GenMatrix Int -> GenMatrix Position -> (GenMatrix Int, GenMatrix Position)
+fillMat2 i mat regions = 
+    if (getSecond (getElement regions (i, 0))) == 2 then 
+       (verifications i (missingNumbers (getRow regions i) mat) mat regions)
+    else
+        (mat, regions)
+
+fillMissingTwo :: Int -> (GenMatrix Int, GenMatrix Position) -> (GenMatrix Int, GenMatrix Position)
+fillMissingTwo i (mat, regions) = 
+    if i+1 < ((getRowsNumber regions)) then
+        fillMissingTwo (i+1) (fillMat2 i mat regions)
+    else
+       (fillMat2 i mat regions)
+    
