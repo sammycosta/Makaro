@@ -1,6 +1,6 @@
 module Matrix (GenMatrix (Matrix), Position,
                getElement, changeElement, getColumnsNumber, getRowsNumber,
-               addElement, deleteFirst, getRow, printMatrix) where
+               addElement, getRow, printMatrix, getListFromMatrix, deleteFirst) where
 
 import Data.List
 
@@ -9,12 +9,12 @@ data GenMatrix t = Matrix [[t]]
 
 type Position = (Int, Int)
 
--- getSize :: GenMatrix t -> (Int, Int)
--- getSize (Matrix []) = (0, 0)
--- getSize (Matrix mat) = (length mat, length (mat!!0))
-
 deleteFirst :: [t] -> [t]
 deleteFirst (a:b) = b
+
+-- Retorna uma lista de listas a partir de uma matriz tipo Matrix
+getListFromMatrix :: GenMatrix t -> [[t]]
+getListFromMatrix (Matrix mat) = mat
 
 -- Retorna uma linha da matriz como lista
 getRow :: GenMatrix t -> Int -> [t]

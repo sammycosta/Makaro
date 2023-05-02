@@ -1,6 +1,4 @@
-module Validations (isAdjacent, isValid, 
-        getAimed, getAroundList, getBigger, verifyBiggerAroundArrow,
-        validByArrow, isArrow, getAroundArrowsList, validByAroundArrows, validNumberPositionByArrows) where
+module Validations (isAdjacent, isValid) where
 
 import Matrix
 import ReadPuzzle
@@ -63,14 +61,14 @@ getAroundArrowsList matRegions position =
     where
         n = getRowsNumber matRegions
 
--- NAO TESTADA chama a função validbyArrow para todas as setas ao redor da posição
+-- chama a função validbyArrow para todas as setas ao redor da posição
 validByAroundArrows :: GenMatrix Int -> GenMatrix String -> Int -> Position -> [Position] -> Bool
 validByAroundArrows _ _ _ _ [] = True
 validByAroundArrows mat matRegions number numberPosition (head:tail)
     | validByArrow matRegions mat head numberPosition number = validByAroundArrows mat matRegions number numberPosition tail
     | otherwise = False
 
--- NAO TESTADA Dada um número e uma posição, retorna se é valido colocar ele nela em função das setas.
+-- Dada um número e uma posição, retorna se é valido colocar ele nela em função das setas.
 validNumberPositionByArrows :: GenMatrix Int -> GenMatrix String -> Int -> Position -> Bool
 validNumberPositionByArrows mat matRegions number position = 
     validByAroundArrows mat matRegions number position aroundArrows
@@ -87,7 +85,7 @@ isAdjacent mat number position =
     where
         n = getRowsNumber mat
 
--- NAO TESTADA É valida para todas as regras.
+-- É valida para todas as regras.
 isValid :: GenMatrix Int -> GenMatrix String -> Int -> Position -> Bool
 isValid mat matRegions number position =
     (not (isAdjacent mat number position)) && (validNumberPositionByArrows mat matRegions number position)

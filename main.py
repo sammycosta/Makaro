@@ -417,6 +417,7 @@ def preenche_toda_regiao(matriz, num_possiveis, vazias, lista_regiao, possibilid
     if len(num_possiveis) == 0 and lista_regiao[1] != 0:
         return False  # Falhou
     elif len(num_possiveis) == 0 and lista_regiao[1] == 0:
+        # elem
         if eh_igual_a_algum(caminho, caminhos_errados):
             # Não conseguiu fazer um caminho que não fosse errado
             return False
