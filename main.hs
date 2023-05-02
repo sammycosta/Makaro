@@ -4,7 +4,7 @@ import Data.List
 import Matrix
 import ReadPuzzle
 import CertainSolutions
-
+import Validations
 
 main :: IO()
 main = do
@@ -41,9 +41,15 @@ main = do
     print regions
     print (getRow certaintyMatrix 2)
     printMatrix certaintyMatrix 0
-
+    printMatrix regionsMatrix 0
+    print (verifyBiggerAroundArrow (getAroundList certaintyMatrix (3, 2) (getAimed regionsMatrix (3, 2))))
+    print (getBigger 2 [5, 6, 99, 0, 10, 143, 7, 55, -3])
+    print (validByArrow regionsMatrix certaintyMatrix (3,2) (3, 1) 6)
+    print (isArrow regionsMatrix (5, 1))
+    print certaintyMatrix regionsMatrix 3 (validByAroundArrows (getAroundArrowsList regionsMatrix (5, 3)))
     -- print (missingNumbers (getRow regions 4) certaintyMatrix)
     -- let res = (fillMissingOne 0 (certaintyMatrix, regions))
     -- print (res)
-    -- print ("\n")
+    -- putStrLn ("\n")
     -- print (fillMissingTwo 0 res)
+

@@ -1,10 +1,12 @@
-module Validations (isAdjacent, isValid) where
+module Validations (isAdjacent, isValid, 
+        getAimed, getAroundList, getBigger, verifyBiggerAroundArrow,
+        validByArrow, isArrow, getAroundArrowsList, validByAroundArrows, validNumberPositionByArrows) where
 
 import Matrix
 import ReadPuzzle
 import PositionUtils
 
--- NAO TESTADA botar otherwise Dada uma posição de seta, retorna a posição que ela aponta.
+-- Dada uma posição de seta, retorna a posição que ela aponta.
 getAimed :: GenMatrix String -> Position -> Position
 getAimed matRegions arrowPosition
     | (getElement matRegions arrowPosition) == "L" = decreaseSecond arrowPosition
@@ -13,7 +15,7 @@ getAimed matRegions arrowPosition
     | (getElement matRegions arrowPosition) == "D" = increaseFirst arrowPosition
     | otherwise = error "Posição de seta não contém seta"
 
--- NAO TESTADA Dada uma posição de seta, retorna a lista de números ao redor que não é o apontado
+-- Dada uma posição de seta, retorna a lista de números ao redor que não é o apontado
 getAroundList :: GenMatrix Int -> Position -> Position -> [Int]
 getAroundList mat arrowPosition aimedPosition = 
         [getElement mat (increaseFirst arrowPosition) | getFirst arrowPosition < (n - 1) && (increaseFirst arrowPosition) /= aimedPosition] ++
@@ -23,19 +25,19 @@ getAroundList mat arrowPosition aimedPosition =
     where
         n = getRowsNumber mat
 
--- NAO TESTADA Verificar qual é o maior número da lista. Começar passando o primeiro elemento.
+-- Verificar qual é o maior número da lista. Começar passando o primeiro elemento.
 getBigger :: Int -> [Int] -> Int
 getBigger number [] = number 
 getBigger number (head:tail) 
     | number > head = getBigger number tail
     | otherwise = getBigger head tail
 
--- NAO TESTADA Dada a lista de números ao redor da seta, retornar o maior. 
+-- Dada a lista de números ao redor da seta, retornar o maior. 
 verifyBiggerAroundArrow :: [Int] -> Int
 verifyBiggerAroundArrow [] = error "Lista vazia" -- verificar essa lógica
 verifyBiggerAroundArrow (head:tail) = getBigger head tail
 
- -- NAO TESTADA Avalia se o número pode ser colocado na posição em função da seta
+ -- Avalia se o número pode ser colocado na posição em função da seta
 validByArrow :: GenMatrix String -> GenMatrix Int -> Position -> Position -> Int -> Bool
 validByArrow matRegions mat arrowPosition numberPosition number
     | aimedPosition == numberPosition = number > (verifyBiggerAroundArrow aroundList)
@@ -45,13 +47,13 @@ validByArrow matRegions mat arrowPosition numberPosition number
         aimedPosition = getAimed matRegions arrowPosition
         aroundList = getAroundList mat arrowPosition aimedPosition
 
--- NAO TESTADA Avalia se posição tem uma seta.
+-- Avalia se posição tem uma seta.
 isArrow :: GenMatrix String -> Position -> Bool
 isArrow matRegions position = (c == "L" || c == "R" || c == "U" || c == "D")
     where
         c = getElement matRegions position
 
--- NAO TESTADA. Dada uma posição, retorna uma lista com as posições de setas ao redor dela.
+-- Dada uma posição, retorna uma lista com as posições de setas ao redor dela.
 getAroundArrowsList :: GenMatrix String -> Position -> [Position]
 getAroundArrowsList matRegions position = 
     [increaseFirst position | (getFirst position) < (n-1) && isArrow matRegions (increaseFirst position)] ++
@@ -75,7 +77,7 @@ validNumberPositionByArrows mat matRegions number position =
     where
         aroundArrows = getAroundArrowsList matRegions position
 
--- NAO TESTADA Retorna True se houver um adjacente igual nessa opção, False se não.
+-- Retorna True se houver um adjacente igual nessa opção, False se não.
 isAdjacent :: GenMatrix Int -> Int -> Position -> Bool
 isAdjacent mat number position =
     (getFirst position < (n-1) && getElement mat (increaseFirst position) == number) ||

@@ -9,7 +9,6 @@ matriz_regioes = []
 matriz_certezas = []
 for i in range(N):
     matriz_regioes.append(file.readline().split())
-file.readline()  # \n
 for i in range(N):
     matriz_certezas.append([int(x) for x in file.readline().split()])
 
@@ -303,6 +302,7 @@ def remove_itens_da_lista(lista_principal, lista_auxiliar):
     return remove_itens_da_lista(lista_principal, lista_auxiliar[1:])
 
 
+# Posso usar a função elem do haskell: verifica se elemento existe na lista
 def eh_igual_a_algum(valor, lista):
     '''procuro na lista uma ocorrencia do valor'''
     if len(lista) == 0:
