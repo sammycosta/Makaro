@@ -26,7 +26,7 @@ numberPosition (head:tail) possiblePositions possibilities =
 
 -- NAO TESTADA Faz a lista de possibilidades a partir de uma lista de números e uma de posições
 getPossibilitiesList:: [Int] -> [Position] -> [Possibility]
-getPossibilitiesList:: possibleNumbers possiblePositions = 
+getPossibilitiesList possibleNumbers possiblePositions = 
     numberPosition possibleNumbers possiblePositions []
 
 -- NAO TESTADA Tenta preencher um número em todas as posições até conseguir
@@ -58,7 +58,7 @@ removeItemsFromList major (head:tail)
 -- NAO TESTADA Retorna a lista de posições possíveis alterada e se alterou ela, caso:
 -- O caminho que estou agora está seguindo um caminho que já deu errado antes.
 forAllWrongPaths :: [Int] -> GenMatrix Int -> [Position] -> [Possibility] -> Bool -> ([Position], Bool)
-forAllWrongPaths :: _ [[]] possiblePositions _ hasAltered = (possiblePositions, hasAltered)
+forAllWrongPaths  _ [[]] possiblePositions _ hasAltered = (possiblePositions, hasAltered)
 -- MATRIZ DE CAMINHOS ERRADOS VAZIA, TO CHECANDO CERTO ACIMA?
 -- PRECISO PEGAR HEAD:TAIL DA MATRIZ, OU SEJA, ROW POR ROW, COMO?
 forAllWrongPaths :: currentPath (head:tail) possiblePositions possibilities hasAltered
