@@ -10,6 +10,7 @@ data GenMatrix t = Matrix [[t]]
 
 type Position = (Int, Int)
 
+-- Deleta o primeiro elemento de uma lista qualquer
 deleteFirst :: [t] -> [t]
 deleteFirst (a:b) = b
 
@@ -74,7 +75,7 @@ addElement (Matrix (a:tail)) (row, col) value | row < 0 || col < 0 || row > leng
         getRows (Matrix m) = m
         new_row = (addElementList [] col value)
         
-
+-- Função auxiliar a PrintMatrix que printa uma linha da matriz na tela
 printRow :: Show t => GenMatrix t -> Int -> IO()
 printRow mat i =
     putStrLn (textRepresentation (getRow mat i))
@@ -82,9 +83,8 @@ printRow mat i =
         textRepresentation :: Show t => [t] -> String
         textRepresentation row = foldl (\acc y -> acc ++ (show y) ++ " ") "" row
 
-
+-- Função que printa a matriz na tela
 printMatrix :: Show t => GenMatrix t -> Int -> IO()
 printMatrix mat i
-    -- | i == 0 = putStrLn "\n" >> printRow mat i >> printMatrix mat (i+1)
     | i < (getRowsNumber mat) = printRow mat i >> printMatrix mat (i+1)
     | otherwise = putStrLn "\n"
