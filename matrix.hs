@@ -1,6 +1,7 @@
 module Matrix (GenMatrix (Matrix), Position,
                getElement, changeElement, getColumnsNumber, getRowsNumber,
-               addElement, getRow, printMatrix, getListFromMatrix, deleteFirst) where
+               addElement, getRow, printMatrix, getListFromMatrix, deleteFirst,
+               changeElementList, addElementList) where
 
 import Data.List
 
