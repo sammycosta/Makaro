@@ -5,6 +5,7 @@ import Matrix
 import ReadPuzzle
 import CertainSolutions
 import Validations
+import Solve
 
 main :: IO()
 main = do
@@ -62,3 +63,10 @@ main = do
     -- print (validByAroundArrows certaintyMatrix regionsMatrix 1 (4, 2) (getAroundArrowsList regionsMatrix (4, 2)))
     -- print (validNumberPositionByArrows certaintyMatrix regionsMatrix 2 (2, 7))
     
+    -- let (succeeded, newMat) = solve certaintyMatrix regionsMatrix regions
+    -- print succeeded
+    -- printMatrix newMat 0
+
+    let (succeeded, mat) = solve certaintyMatrix regionsMatrix regions
+    print succeeded
+    printMatrix mat 0
