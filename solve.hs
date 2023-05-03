@@ -65,20 +65,21 @@ continueBacktracking mat matRegions regions regionsPaths puzzleErrorList possibl
         else
             tryAgainSameRegion newMat matRegions regions regionsPaths puzzleErrorList possiblePositions
         where
-            (succeeded, newMat, newPuzzleErrorList) = backtracking mat matRegions regions regionsPaths puzzleErrorList
+            newRegions = Matrix(tail (getListFromMatrix regions))
+            (succeeded, newMat, newPuzzleErrorList) = backtracking mat matRegions newRegions regionsPaths puzzleErrorList
+
 
 -- Para cada região
 backtracking:: GenMatrix Int -> GenMatrix String -> GenMatrix Position -> [[Int]] -> [PuzzleError]
     -> (Bool, GenMatrix Int, [PuzzleError])
 backtracking mat matRegions regions regionsPaths puzzleErrorList
     | length (getListFromMatrix regions) == 0 = (True, mat, puzzleErrorList)
-    | succeeded = continueBacktracking newMat matRegions newRegions newRegPaths puzzleErrorList possiblePositions
+    | succeeded = continueBacktracking newMat matRegions regions newRegPaths puzzleErrorList possiblePositions
     | otherwise = (False, mat, puzzleErrorList)
     where
         wrongPaths = makeWrongPathList regionsPaths puzzleErrorList
         (possibleNumbers, possiblePositions) = missingNumbers (getRow regions 0) mat
         (succeeded, newMat, newRegPaths) = solveByRegion mat matRegions regions regionsPaths wrongPaths possibleNumbers possiblePositions
-        newRegions = Matrix(tail (getListFromMatrix regions))
 
 
 solve :: GenMatrix Int -> GenMatrix String -> GenMatrix Position -> (Bool, GenMatrix Int)

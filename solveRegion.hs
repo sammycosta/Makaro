@@ -120,7 +120,7 @@ checkWrongPaths mat matRegions path wrongPaths lastPosition possiblePositions po
     (newPossiblePositions, hasAltered) =  forAllWrongPaths path (getListFromMatrix wrongPaths) possiblePositions possibilities False
 
 
--- Altera errorList de região baseado nua posição que deu erro
+-- Altera errorList de região baseado numa posição que deu erro
 changeErrorList :: [RegionError] -> Position -> [Int] -> [RegionError]
 changeErrorList errorList lastPos path =
     if ((length positionErrors) > 0) then 

@@ -465,6 +465,7 @@ def backtracking(matriz, lista_regioes, caminhos_regioes, lista_erros_regioes):
         # Checa aqui, então vai voltar loucamente
         return True
 
+    # makewrongpathlist
     caminhos_errados = []
     ordem = len(caminhos_regioes)
     erros_atual = lista_erros_regioes[ordem]
