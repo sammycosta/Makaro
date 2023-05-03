@@ -1,6 +1,6 @@
 import copy
 
-file = open('puzzle_14.txt', "r")
+file = open('puzzle_17.txt', "r")
 
 N = int(file.readline())
 
@@ -61,7 +61,7 @@ def percorre_lista(possibilidades, posicoes_vazias, lista, matriz):
     if len(lista) > 0:
         row, col = lista[0]
         num = matriz[row][col]
-        if num != 0:
+        if num != 0 and num in possibilidades:
             possibilidades.remove(num)
         else:
             posicoes_vazias.append((row, col))

@@ -10,14 +10,15 @@ import Data.List
 import Data.Maybe (fromMaybe)
 import CertainSolutions
 
-type PuzzleError = ([[Int]], [[Int]]) -- regionPath "pai", paths errados pra região
+type PuzzleError = ([[Int]], [[Int]]) -- (regionPath "pai", paths errados pra região)
 
+-- Cria uma lista de caminhos errados na região específica a partir da lista total de puzzleError
 makeWrongPathList :: [[Int]] -> [PuzzleError] -> (GenMatrix Int)
 makeWrongPathList regionsPaths regionErrorList
     | isCurrentError || isFirstRegionError = Matrix(snd currentError)
-    | otherwise = Matrix([]) -- Volta vazia
+    | otherwise = Matrix([]) -- Volta vazia. Não há caminhos que causaram falha nesse ponto da árvore
     where
-        order = length regionsPaths
+        order = length regionsPaths -- Referente ao indíce da região na lista de erros
         currentError = regionErrorList!!order -- Tupla PuzzleError.
         lenErrorList = length (snd currentError)
         isCurrentError = order > 0 && lenErrorList > 0 && ((fst currentError) == regionsPaths)
@@ -30,7 +31,7 @@ cleanRegion mat (head:tail) = cleanRegion newMat tail
     where
         newMat = changeElement mat head 0
 
--- Atualiza a lista de erros totais
+-- Atualiza a lista de erros totais baseado em um caminho que causou uma falha em uma região específica
 changePuzzleErrorList :: [PuzzleError] ->  [[Int]] -> [Int] -> [PuzzleError]
 changePuzzleErrorList puzzleErrorList regionsPaths failedPath =
     if ((length pathErrors) > 0) then
@@ -41,11 +42,13 @@ changePuzzleErrorList puzzleErrorList regionsPaths failedPath =
     else
         changeElementList puzzleErrorList order (regionsPaths, [failedPath])
     where
-        order = length regionsPaths
+        order = length regionsPaths -- Referente ao indíce da região na lista de erros
         puzzleError = puzzleErrorList!!order
         regionPathError = fst puzzleError
         pathErrors = snd puzzleError
 
+-- Falhou, chamar backtracking de novo para a mesma região com a matriz e caminhos limpos 
+-- E a puzzleErrorList atualizada com a falha.
 tryAgainSameRegion :: GenMatrix Int -> GenMatrix String -> GenMatrix Position -> [[Int]] 
         -> [PuzzleError] -> [Position] -> (Bool, GenMatrix Int, [PuzzleError])
 tryAgainSameRegion mat matRegions regions regionsPaths puzzleErrorList possiblePositions
@@ -57,6 +60,8 @@ tryAgainSameRegion mat matRegions regions regionsPaths puzzleErrorList possibleP
         newPuzzleErrorList = changePuzzleErrorList puzzleErrorList newRegionsPath failedPath
         newMat = cleanRegion mat possiblePositions
 
+-- Continuação do backtracking: após o preenchimento dar certo, eu tento um próximo.
+-- Caso falhe, eu tento de novo para a mesma região
 continueBacktracking :: GenMatrix Int -> GenMatrix String -> GenMatrix Position -> [[Int]] -> [PuzzleError]
         -> [Position] -> (Bool, GenMatrix Int, [PuzzleError])
 continueBacktracking mat matRegions regions regionsPaths puzzleErrorList possiblePositions =
@@ -69,7 +74,7 @@ continueBacktracking mat matRegions regions regionsPaths puzzleErrorList possibl
             (auxMat, auxReg) = certainties (mat, newRegions) -- Roda certezas em cima do resultado
             (succeeded, newMat, newPuzzleErrorList) = backtracking auxMat matRegions auxReg regionsPaths puzzleErrorList
 
--- Para cada região
+-- Inicio do backtracking de regiões
 backtracking:: GenMatrix Int -> GenMatrix String -> GenMatrix Position -> [[Int]] -> [PuzzleError]
     -> (Bool, GenMatrix Int, [PuzzleError])
 backtracking mat matRegions regions regionsPaths puzzleErrorList
@@ -82,6 +87,7 @@ backtracking mat matRegions regions regionsPaths puzzleErrorList
         (succeeded, newMat, newRegPaths) = solveByRegion mat matRegions regions regionsPaths wrongPaths possibleNumbers possiblePositions
 
 
+-- Inicia a solução do puzzle
 solve :: GenMatrix Int -> GenMatrix String -> GenMatrix Position -> (Bool, GenMatrix Int)
 solve mat matRegions regions = (succeeded, newMat)
     where

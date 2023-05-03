@@ -10,7 +10,7 @@ import SolveRegion
 
 main :: IO()
 main = do
-    contents <- readFile "puzzle_14.txt"
+    contents <- readFile "puzzle_17.txt"
     let list = lines contents
     let size = read (head list) :: Int
     -- create matrices of certainties and regions to map the puzzle
