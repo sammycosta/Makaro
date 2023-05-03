@@ -1,5 +1,6 @@
 module SolveRegion(solveByRegion,
-fillWholeRegion, backtrackingTryFillNumber, continueBackTrackingTryFillNumber, tryAgainSameNumber, removeErrorPositions) where
+fillWholeRegion, backtrackingTryFillNumber, continueBackTrackingTryFillNumber, tryAgainSameNumber, removeErrorPositions,
+tryAgainFillNumber) where
 
 import Matrix
 import PositionUtils

@@ -12,8 +12,6 @@ import CertainSolutions
 
 type PuzzleError = ([[Int]], [[Int]]) -- regionPath "pai", paths errados pra região
 
--- [1,2,5], [2,5,8]
--- Paralela a removeErrorPositions
 makeWrongPathList :: [[Int]] -> [PuzzleError] -> (GenMatrix Int)
 makeWrongPathList regionsPaths regionErrorList
     | isCurrentError || isFirstRegionError = Matrix(snd currentError)
@@ -32,7 +30,7 @@ cleanRegion mat (head:tail) = cleanRegion newMat tail
     where
         newMat = changeElement mat head 0
 
--- lista_erros_regioes
+-- Atualiza a lista de erros totais
 changePuzzleErrorList :: [PuzzleError] ->  [[Int]] -> [Int] -> [PuzzleError]
 changePuzzleErrorList puzzleErrorList regionsPaths failedPath =
     if ((length pathErrors) > 0) then
@@ -56,8 +54,8 @@ tryAgainSameRegion mat matRegions regions regionsPaths puzzleErrorList possibleP
     where
         failedPath = last regionsPaths
         newRegionsPath = init regionsPaths -- Pop
-        newMat = cleanRegion mat possiblePositions
         newPuzzleErrorList = changePuzzleErrorList puzzleErrorList newRegionsPath failedPath
+        newMat = cleanRegion mat possiblePositions
 
 continueBacktracking :: GenMatrix Int -> GenMatrix String -> GenMatrix Position -> [[Int]] -> [PuzzleError]
         -> [Position] -> (Bool, GenMatrix Int, [PuzzleError])
@@ -70,7 +68,6 @@ continueBacktracking mat matRegions regions regionsPaths puzzleErrorList possibl
             (succeeded, newMat, newPuzzleErrorList) = backtracking mat matRegions regions regionsPaths puzzleErrorList
 
 -- Para cada região
--- se der loop não tá dando certo verificação de matriz vazia. avaliar onde uso isso!
 backtracking:: GenMatrix Int -> GenMatrix String -> GenMatrix Position -> [[Int]] -> [PuzzleError]
     -> (Bool, GenMatrix Int, [PuzzleError])
 backtracking mat matRegions regions regionsPaths puzzleErrorList

@@ -484,10 +484,12 @@ def backtracking(matriz, lista_regioes, caminhos_regioes, lista_erros_regioes):
         matriz, lista_regioes, caminhos_regioes, caminhos_errados, num_possiveis, vazias)
 
     if preencheu:
+        # ContinueBackTracking
         preencheu = backtracking(
             matriz, lista_regioes[1:], caminhos_regioes, lista_erros_regioes)
 
         if not preencheu:
+            # TryAgainSameRegion
             caminho_falha = caminhos_regioes.pop()
             ordem = len(caminhos_regioes)
             if len(lista_erros_regioes[ordem]) > 0:
