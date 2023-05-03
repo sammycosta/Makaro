@@ -6,10 +6,11 @@ import ReadPuzzle
 import CertainSolutions
 import Validations
 import Solve
+import SolveRegion
 
 main :: IO()
 main = do
-    contents <- readFile "puzzle_01.txt"
+    contents <- readFile "puzzle_14.txt"
     print contents
     let list = lines contents
     let size = read (head list) :: Int
@@ -46,7 +47,7 @@ main = do
 
     print (isValid certaintyMatrix regionsMatrix 6 (3, 5))
 
-    print (getListFromMatrix certaintyMatrix)
+    -- print (getListFromMatrix certaintyMatrix)
 
     -- print (elem [0, 1, 2] [[1, 4], [1, 2, 3], [0, 1]])
     

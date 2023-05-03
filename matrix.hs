@@ -12,7 +12,7 @@ type Position = (Int, Int)
 
 -- Deleta o primeiro elemento de uma lista qualquer
 deleteFirst :: [t] -> [t]
-deleteFirst (a:b) = b
+deleteFirst (_:b) = b
 
 -- Retorna uma lista de listas a partir de uma matriz tipo Matrix
 getListFromMatrix :: GenMatrix t -> [[t]]

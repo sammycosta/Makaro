@@ -336,6 +336,7 @@ def backtracking_preenche_numero(matriz, num_possiveis, vazias, lista_regiao, po
     num = num_possiveis[0]
     vazias_possiveis = vazias.copy()
 
+    # removeErrorPositions
     ordem = len(caminho)
     lista_falhas_atual = lista_falhas[ordem]
     temErrosAtual = ordem > 0 and len(
@@ -345,15 +346,21 @@ def backtracking_preenche_numero(matriz, num_possiveis, vazias, lista_regiao, po
         vazias_possiveis = remove_itens_da_lista(
             vazias_possiveis, lista_falhas_atual[1:])
 
+    # tryfillnumber, fillnumber
     conseguiu_preencher, pos = preenche_numero(
         matriz, num, vazias_possiveis, lista_regiao)
 
     if conseguiu_preencher:
+        # alteracao currentPath
         caminho.append(possibilidades.index((num, (pos))))
 
+        # chamada de checkWrongPaths
         vazias_possiveis, alterou = para_todos_caminhos_errados(
             caminho, caminhos_errados, vazias_possiveis, possibilidades, False)
 
+        # continuebacktrackingfillNumber
+
+        # checkworngpaths
         if alterou:
             # limpa preenchimento anterior pra tentar alterar o curso do caminho atual
             lista_regiao[1] += 1
@@ -374,17 +381,21 @@ def backtracking_preenche_numero(matriz, num_possiveis, vazias, lista_regiao, po
         indice = vazias.index(pos)
         vazias.pop(indice)  # Posição já preenchida
 
+        # conntinuebacktracking
         # Continua para os outros números
         preencheu = preenche_toda_regiao(
             matriz, num_possiveis[1:], vazias, lista_regiao, possibilidades, caminho, lista_falhas, caminhos_errados)
 
         if not preencheu:
+            # tryAgainSameNumber
             # Continuar a tentar preencher o número mas nas próximas posições
             # Limpar preenchimento
             lista_regiao[1] += 1
             matriz[pos[0]][pos[1]] = 0
             vazias.insert(indice, pos)
             caminho.pop()  # falhou
+
+            # changeErrorList
             ordem = len(caminho)
             if len(lista_falhas[ordem]) > 0:
                 if lista_falhas[ordem][0] == caminho:

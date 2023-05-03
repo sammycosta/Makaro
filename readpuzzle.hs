@@ -82,7 +82,7 @@ treatCharacter c mat_cert regions (row, col) =
 findRegions :: GenMatrix String -> GenMatrix Int ->  GenMatrix Position -> Position ->  GenMatrix Position
 findRegions mat_reg mat_cert regions (row, col) = 
     if (col+1) == (getRowsNumber mat_reg) && (row+1) == (getRowsNumber mat_reg) then
-        regions
+        (treatCharacter (getElement mat_reg (row, col)) mat_cert regions (row, col))
     else if (col+1) == (getRowsNumber mat_reg) && (row+1) /= (getRowsNumber mat_reg) then
         findRegions mat_reg mat_cert (treatCharacter (getElement mat_reg (row, col)) mat_cert regions (row, col)) (row+1, 0)
     else

@@ -1,5 +1,5 @@
 module CertainSolutions (missingNumbers, iterateList, 
-                        fillMissingOne, fillMissingTwo) where
+                        fillMissingOne, fillMissingTwo, certainties) where
 
 
 import Data.List
@@ -79,3 +79,6 @@ fillMissingTwo i (mat, regions) =
     else
        (fillMat2 i mat regions)
     
+certainties :: (GenMatrix Int, GenMatrix Position) -> (GenMatrix Int, GenMatrix Position)
+certainties (mat, regions) =
+    fillMissingTwo 0 (fillMissingOne 0 (mat, regions))

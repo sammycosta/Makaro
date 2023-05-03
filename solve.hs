@@ -1,4 +1,6 @@
-module Solve(solve) where
+module Solve(solve, 
+        backtracking, continueBacktracking, tryAgainSameRegion,
+        changePuzzleErrorList, cleanRegion, makeWrongPathList) where
 
 import SolveRegion
 import Matrix
@@ -10,11 +12,12 @@ import CertainSolutions
 
 type PuzzleError = ([[Int]], [[Int]]) -- regionPath "pai", paths errados pra região
 
+-- [1,2,5], [2,5,8]
 -- Paralela a removeErrorPositions
 makeWrongPathList :: [[Int]] -> [PuzzleError] -> (GenMatrix Int)
 makeWrongPathList regionsPaths regionErrorList
     | isCurrentError || isFirstRegionError = Matrix(snd currentError)
-    | otherwise = Matrix([[]]) -- Volta vazia
+    | otherwise = Matrix([]) -- Volta vazia
     where
         order = length regionsPaths
         currentError = regionErrorList!!order -- Tupla PuzzleError.
@@ -51,7 +54,7 @@ tryAgainSameRegion mat matRegions regions regionsPaths puzzleErrorList possibleP
     | ((length failedPath) > 0) = backtracking newMat matRegions regions newRegionsPath newPuzzleErrorList
     | otherwise = (False, mat, newPuzzleErrorList)
     where
-        failedPath = last regionsPaths -- verificar, pop
+        failedPath = last regionsPaths
         newRegionsPath = init regionsPaths -- Pop
         newMat = cleanRegion mat possiblePositions
         newPuzzleErrorList = changePuzzleErrorList puzzleErrorList newRegionsPath failedPath
@@ -64,7 +67,7 @@ continueBacktracking mat matRegions regions regionsPaths puzzleErrorList possibl
         else
             tryAgainSameRegion newMat matRegions regions regionsPaths puzzleErrorList possiblePositions
         where
-            (succeeded, newMat, newPuzzleErrorList) = backtracking newMat matRegions regions regionsPaths puzzleErrorList
+            (succeeded, newMat, newPuzzleErrorList) = backtracking mat matRegions regions regionsPaths puzzleErrorList
 
 -- Para cada região
 -- se der loop não tá dando certo verificação de matriz vazia. avaliar onde uso isso!
@@ -82,8 +85,7 @@ backtracking mat matRegions regions regionsPaths puzzleErrorList
 
 
 solve :: GenMatrix Int -> GenMatrix String -> GenMatrix Position -> (Bool, GenMatrix Int)
-solve mat matRegions regions =
-    (succeeded, mat)
+solve mat matRegions regions = (succeeded, newMat)
     where
-        puzzleErrorList = replicate (length (getListFromMatrix regions)) ([], []) -- avaliar
-        (succeeded, mat, e) = backtracking mat matRegions regions [] puzzleErrorList
+        puzzleErrorList = replicate (length (getListFromMatrix regions)) ([], []) 
+        (succeeded, newMat, e) = backtracking mat matRegions regions [] puzzleErrorList

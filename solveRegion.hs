@@ -1,4 +1,5 @@
-module SolveRegion(solveByRegion) where
+module SolveRegion(solveByRegion,
+fillWholeRegion, backtrackingTryFillNumber, continueBackTrackingTryFillNumber, tryAgainSameNumber, removeErrorPositions) where
 
 import Matrix
 import PositionUtils
@@ -10,7 +11,7 @@ type Possibility = (Int, Position)
 type RegionError = ([Int], [Position]) -- Caminho, posições falhas
 -- AUXILIARES
 
--- NAO TESTADA Junta um número com várias posições, criando uma lista de possibilidades.
+-- Junta um número com várias posições, criando uma lista de possibilidades.
 positionNumber:: Int -> [Position] -> [Possibility] -> [Possibility]
 positionNumber _ [] possibilities = possibilities
 positionNumber number (head:tail) possibilities =
@@ -18,7 +19,7 @@ positionNumber number (head:tail) possibilities =
     where
         newPossibilities = possibilities ++ [(number, head)]
 
--- NAO TESTADA Chamada positionNumber para todos os números na lista
+-- Chamada positionNumber para todos os números na lista
 numberPosition:: [Int] -> [Position] -> [Possibility] -> [Possibility]
 numberPosition [] _ possibilities = possibilities
 numberPosition (head:tail) possiblePositions possibilities =
@@ -26,7 +27,7 @@ numberPosition (head:tail) possiblePositions possibilities =
     where
         newPossibilities = positionNumber head possiblePositions possibilities
 
--- NAO TESTADA Faz a lista de possibilidades a partir de uma lista de números e uma de posições
+-- Faz a lista de possibilidades a partir de uma lista de números e uma de posições
 getPossibilitiesList:: [Int] -> [Position] -> [Possibility]
 getPossibilitiesList possibleNumbers possiblePositions = 
     numberPosition possibleNumbers possiblePositions []
@@ -60,7 +61,7 @@ removeItemsFromList major (head:tail)
 -- NAO TESTADA Retorna a lista de posições possíveis alterada e se alterou ela, caso:
 -- O caminho que estou agora está seguindo um caminho que já deu errado antes.
 forAllWrongPaths :: [Int] -> [[Int]] -> [Position] -> [Possibility] -> Bool -> ([Position], Bool)
-forAllWrongPaths  _ [[]] possiblePositions _ hasAltered = (possiblePositions, hasAltered)
+forAllWrongPaths  _ [] possiblePositions _ hasAltered = (possiblePositions, hasAltered)
 forAllWrongPaths currentPath (head:tail) possiblePositions possibilities hasAltered
     | isPrefixOf currentPath head = 
         forAllWrongPaths currentPath tail newPossiblePositions possibilities True
@@ -102,8 +103,8 @@ tryAgainFillNumber mat matRegions number possiblePositions region lastPosition c
     | otherwise = (mat, region, currentPath, lastPosition) -- inalterado. acredito que ja esteja com preenchimento antigo
     where
         (newMatrix, newRegion) = cleanFillNumber mat region lastPosition 
-        (succeeded, pos) = tryFillNumber mat matRegions number possiblePositions region
-        (returnMat, returnReg) = fillNumber mat number pos newRegion
+        (succeeded, pos) = tryFillNumber newMatrix matRegions number possiblePositions region
+        (returnMat, returnReg) = fillNumber newMatrix number pos newRegion
         newPath = (init currentPath) ++ [fromMaybe (-1) (elemIndex (number, pos) possibilities)]
         
 
@@ -112,7 +113,7 @@ checkWrongPaths :: GenMatrix Int -> GenMatrix String -> [Int] -> GenMatrix Int
                 -> Position -> [Position] -> [Possibility] -> Int -> [Position]
                 -> (GenMatrix Int, [Position],  [Int], Position)
 checkWrongPaths mat matRegions path wrongPaths lastPosition possiblePositions possibilities number region
-    | hasAltered = tryAgainFillNumber mat matRegions number possiblePositions region lastPosition path possibilities
+    | hasAltered = tryAgainFillNumber mat matRegions number newPossiblePositions region lastPosition path possibilities
     | otherwise = (mat, region, path, lastPosition) -- inalterado
    where
     (newPossiblePositions, hasAltered) =  forAllWrongPaths path (getListFromMatrix wrongPaths) possiblePositions possibilities False
@@ -134,7 +135,7 @@ changeErrorList errorList lastPos path =
         pathError = fst regionError
         positionErrors = snd regionError
 
--- Falhou, chamar backtracking de novo
+-- Falhou, chamar backtracking de novo para o mesmo número
 tryAgainSameNumber :: GenMatrix Int -> GenMatrix String -> [Int] -> [Position] 
                         -> [Position] -> [Possibility] -> [Int] -> [RegionError] 
                         -> GenMatrix Int -> (Position, Int) -> (Bool, GenMatrix Int, [Position], [Int])
@@ -143,10 +144,11 @@ tryAgainSameNumber mat matRegions possibleNumbers possiblePositions region possi
     where
         (newMatrix, newRegion) = cleanFillNumber mat region (fst lastPos)
         newPath = init path -- Remove ultimo do caminho. 
-        newErrorList = changeErrorList errorList (fst lastPos) path
+        newErrorList = changeErrorList errorList (fst lastPos) newPath
         newPossiblePositions = addElementList possiblePositions (snd lastPos) (fst lastPos)
 
 
+-- headtail: números possíveis
 continueBackTrackingTryFillNumber :: GenMatrix Int -> GenMatrix String -> [Int] -> [Position] 
                         -> [Position] -> [Possibility] -> [Int] -> [RegionError] 
                         -> GenMatrix Int -> (Position, Int) -> (Bool, GenMatrix Int, [Position], [Int])
@@ -163,13 +165,13 @@ backtrackingTryFillNumber :: GenMatrix Int -> GenMatrix String -> [Int] -> [Posi
                         -> GenMatrix Int -> (Bool, GenMatrix Int, [Position], [Int])
 backtrackingTryFillNumber mat matRegions (head:tail) possiblePositions region possibilities path errorList wrongPaths =
     if (succeeded) then 
-        continueBackTrackingTryFillNumber returnMat matRegions (head:tail) possiblePosNext returnReg possibilities currentPath errorList wrongPaths lastPos
+        continueBackTrackingTryFillNumber returnMat matRegions (head:tail) possiblePosNext returnReg possibilities newPath errorList wrongPaths lastPos
     else
         (False, mat, region, path)
     where
         newPossiblePositions = removeErrorPositions path errorList possiblePositions
         (succeeded, pos) = tryFillNumber mat matRegions head newPossiblePositions region
-        (newMat, newRegion) = fillNumber mat head pos newRegion
+        (newMat, newRegion) = fillNumber mat head pos region
 
         currentPath = path ++ [fromMaybe (-1) (elemIndex (head, pos) possibilities)] 
         (returnMat, returnReg, newPath, newPosition) = checkWrongPaths newMat matRegions currentPath wrongPaths pos newPossiblePositions possibilities head newRegion
@@ -204,4 +206,3 @@ solveByRegion mat matRegions regions regionsPaths wrongPaths possibleNumbers pos
         errorList = replicate (length possibleNumbers) ([], [])
         (succeeded, newMat, newReg, newPath) = fillWholeRegion mat matRegions possibleNumbers possiblePositions region possibilities [] errorList wrongPaths
         newRegPaths = regionsPaths ++ [newPath]
-        -- jogar no certezas aqui e conseguir nova matriz?
