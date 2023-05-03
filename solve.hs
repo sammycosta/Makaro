@@ -66,8 +66,8 @@ continueBacktracking mat matRegions regions regionsPaths puzzleErrorList possibl
             tryAgainSameRegion newMat matRegions regions regionsPaths puzzleErrorList possiblePositions
         where
             newRegions = Matrix(tail (getListFromMatrix regions))
-            (succeeded, newMat, newPuzzleErrorList) = backtracking mat matRegions newRegions regionsPaths puzzleErrorList
-
+            (auxMat, auxReg) = certainties (mat, newRegions) -- Roda certezas em cima do resultado
+            (succeeded, newMat, newPuzzleErrorList) = backtracking auxMat matRegions auxReg regionsPaths puzzleErrorList
 
 -- Para cada região
 backtracking:: GenMatrix Int -> GenMatrix String -> GenMatrix Position -> [[Int]] -> [PuzzleError]

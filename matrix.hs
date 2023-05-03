@@ -87,4 +87,4 @@ printRow mat i =
 printMatrix :: Show t => GenMatrix t -> Int -> IO()
 printMatrix mat i
     | i < (getRowsNumber mat) = printRow mat i >> printMatrix mat (i+1)
-    | otherwise = putStrLn "\n"
+    | otherwise = putStrLn ""

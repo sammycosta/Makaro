@@ -80,5 +80,6 @@ fillMissingTwo i (mat, regions) =
        (fillMat2 i mat regions)
     
 certainties :: (GenMatrix Int, GenMatrix Position) -> (GenMatrix Int, GenMatrix Position)
+certainties (mat, Matrix([])) = (mat, Matrix([]))
 certainties (mat, regions) =
     fillMissingTwo 0 (fillMissingOne 0 (mat, regions))
