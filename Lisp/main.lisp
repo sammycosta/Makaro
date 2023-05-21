@@ -7,24 +7,18 @@
 ;; (ql:quickload "alexandria")
 ;; (require 'alexandria)
 
-
-(defvar size 0)
-(defvar contents_list '())
-(defvar regionsMatrix '())
-(defvar certaintyMatrix '())
-(defvar regions '())
-
 (defun readFile (file_name)
   (with-open-file (stream file_name :direction :input)
     (loop for linha = (read-line stream nil)
           while linha
           collect linha)))
 
-
 (defun main()
-    ;; (let ((content_list (readfile "../puzzle_01.txt")))
-    ;;    ((size (car content)))
-    ;;    (print size))
+ (let ((size 0)
+        (contents_list '())
+        (regionsMatrix '())
+        (certaintyMatrix '())
+        (regions '()))
     (setq contents_list (readfile "../puzzle_01.txt"))
     (setq size (parse-integer (car contents_list)))
     (print size)
@@ -45,9 +39,9 @@
     (print (Matrix:getColumnsNumber regionsMatrix 1))
     (print (Matrix:getElement certaintyMatrix 0 0))
     ; (let c certaintyMatrix
-    ;     ; (print (Matrix:changeElement c 0 0 1))
-    ;     ; (print (Matrix:getElement c 0 0))
+    ;     (print (Matrix:changeElement c 0 0 1))
+    ;     (print (Matrix:getElement c 0 0))
     ; )
-    
+ )
 )
 (main)
