@@ -9,10 +9,24 @@
 
 (in-package :ReadPuzzle)
 
+(defun split-string (string &optional (delimiter #\Space))
+  "Divide uma string em uma lista de substrings com base no separador especificado."
+  (if (string= string "")
+      '()
+      (let ((start 0)
+            (end (length string))
+            (result '()))
+        (loop while (< start end)
+              do (let ((next-delimiter (position delimiter string :start start)))
+                   (push (subseq string start next-delimiter) result)
+                   (if next-delimiter
+                       (setq start (1+ next-delimiter))
+                       (setq start end))))
+        (nreverse result))))
 
 (defun getListFromStr (string)
-    (split-sequence:split-sequence #\SPACE string)
-)
+  "Retorna uma lista de palavras a partir de uma string."
+  (split-string string #\Space))
 
 (defun createMatrix (list)
     (if (null list)

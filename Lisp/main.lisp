@@ -1,6 +1,6 @@
 ;; (require 'uiop)
-(load "~/quicklisp/setup.lisp")
-(ql:quickload "split-sequence")
+; (load "~/quicklisp/setup.lisp")
+; (ql:quickload "split-sequence")
 
 (require "ReadPuzzle" "./readpuzzle.lisp")
 (require "Matrix" "./matrix.lisp")
@@ -13,7 +13,6 @@
 (defvar regionsMatrix '())
 (defvar certaintyMatrix '())
 (defvar regions '())
-
 
 (defun readFile (file_name)
   (with-open-file (stream file_name :direction :input)
@@ -45,10 +44,10 @@
     (print (Matrix:getRowsNumber regionsMatrix))
     (print (Matrix:getColumnsNumber regionsMatrix 1))
     (print (Matrix:getElement certaintyMatrix 0 0))
-    (let c certaintyMatrix
-        (print (Matrix:changeElement c 0 0 1))
-        (print (Matrix:getElement c 0 0))
-    )
+    ; (let c certaintyMatrix
+    ;     ; (print (Matrix:changeElement c 0 0 1))
+    ;     ; (print (Matrix:getElement c 0 0))
+    ; )
     
 )
 (main)

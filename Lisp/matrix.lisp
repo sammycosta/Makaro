@@ -4,7 +4,7 @@
              :getRowsNumber
              :getColumnsNumber
              :getElement
-             :changeElement
+            ;  :changeElement
                 ))
 
 (in-package :Matrix)
@@ -55,21 +55,21 @@
     )
 )
 
-(defun changeElement (matrix pos value)
-    (if (null matrix)
-        (error "Empty")
-        (cond 
-            ((or (< (position-row pos) 0) (< (position-col pos) 0) (>= (position-row pos) (list-length matrix) (>= (position-col pos) (list-length (car matrix))))) 
-               (error "Index out of bounds"))
-            ((= (position-row pos) 0)
-                (cons (changeElementList (nth (position-row pos) matrix) (position-col pos) value)))
-            (t 
-                (let new_pos
-                    (make-position
-                        :row (- (position-row pos) 1)
-                        :col (position-row col)
-                    )
-                (cons (car matrix) (changeElement (cdr matrix) new_pos value)))) 
-        )
-    )
-)
+; (defun changeElement (matrix pos value)
+;     (if (null matrix)
+;         (error "Empty")
+;         (cond 
+;             ((or (< (position-row pos) 0) (< (position-col pos) 0) (>= (position-row pos) (list-length matrix) (>= (position-col pos) (list-length (car matrix))))) 
+;                (error "Index out of bounds"))
+;             ((= (position-row pos) 0)
+;                 (cons (changeElementList (nth (position-row pos) matrix) (position-col pos) value)))
+;             (t 
+;                 (let new_pos
+;                     (make-position
+;                         :row (- (position-row pos) 1)
+;                         :col (position-row col)
+;                     )
+;                 (cons (car matrix) (changeElement (cdr matrix) new_pos value)))) 
+;         )
+;     )
+; )
