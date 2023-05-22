@@ -4,14 +4,22 @@
              :getRowsNumber
              :getColumnsNumber
              :getElement
-            ;  :changeElement
+             :changeElement
+             :makePosition
                 ))
 
 (in-package :Matrix)
 
-(defstruct Position
+(defstruct myposition
     row
     col
+)
+
+(defun makePosition (row col)
+    (make-myposition
+        :row row
+        :col col
+    )
 )
 
 (defun getRow (matrix row)
@@ -55,21 +63,21 @@
     )
 )
 
-; (defun changeElement (matrix pos value)
-;     (if (null matrix)
-;         (error "Empty")
-;         (cond 
-;             ((or (< (position-row pos) 0) (< (position-col pos) 0) (>= (position-row pos) (list-length matrix) (>= (position-col pos) (list-length (car matrix))))) 
-;                (error "Index out of bounds"))
-;             ((= (position-row pos) 0)
-;                 (cons (changeElementList (nth (position-row pos) matrix) (position-col pos) value)))
-;             (t 
-;                 (let new_pos
-;                     (make-position
-;                         :row (- (position-row pos) 1)
-;                         :col (position-row col)
-;                     )
-;                 (cons (car matrix) (changeElement (cdr matrix) new_pos value)))) 
-;         )
-;     )
-; )
+(defun changeElement (matrix pos value)
+    (if (null matrix)
+        (error "Empty")
+        (cond 
+            ((or (< (myposition-row pos) 0) (< (myposition-col pos) 0) (>= (myposition-row pos) (list-length matrix) (>= (myposition-col pos) (list-length (car matrix))))) 
+               (error "Index out of bounds"))
+            ((= (myposition-row pos) 0)
+                (cons (changeElementList (nth (myposition-row pos) matrix) (myposition-col pos) value) (cdr matrix)))
+            (t 
+                (let ((new_pos nil))
+                (setq new_pos (make-myposition
+                        :row (- (myposition-row pos) 1)
+                        :col (myposition-col pos)
+                    ))
+                (cons (car matrix) (changeElement (cdr matrix) new_pos value)))) 
+        )
+    )
+)
