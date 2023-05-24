@@ -19,7 +19,8 @@
         (contents_list '())
         (regionsMatrix '())
         (certaintyMatrix '())
-        (regions '()))
+        (regions '())
+        (initial_pos (Matrix:makePosition 0 0)))
     (setq contents_list (readfile "../puzzle_01.txt"))
     (setq size (parse-integer (car contents_list)))
     (print size)
@@ -46,6 +47,12 @@
         (print (Matrix:getElement c pos))
         (Matrix:printMatrix (Matrix:addElement c pos 88))
     )
+
+    (print initial_pos)
+    (setq regions (ReadPuzzle:findRegions regionsMatrix certaintyMatrix '(()) initial_pos))
+    (print regions)
+
  )
 )
+
 (main)
