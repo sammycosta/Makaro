@@ -4,6 +4,7 @@
 
 (require "ReadPuzzle" "./readpuzzle.lisp")
 (require "Matrix" "./matrix.lisp")
+(require "PosUtils" "./positionUtils.lisp")
 ;; (ql:quickload "alexandria")
 ;; (require 'alexandria)
 
@@ -29,19 +30,21 @@
     (setq regionsMatrix (ReadPuzzle:createMatrix (subseq contents_list 1 (+ 1 size))))
     (print regionsMatrix)
 
-    (setq certaintyMatrix (ReadPuzzle:createIntMatrix (subseq contents_list (+ 2 size))))
+    (setq certaintyMatrix (ReadPuzzle:createIntMatrix (subseq contents_list (+ 1 size))))
     (print certaintyMatrix)
 
-    (print (ReadPuzzle:isLetter (nth 1 (nth 0 regionsMatrix))))
+    ;; (print (ReadPuzzle:isLetter (nth 1 (nth 0 regionsMatrix))))
 
-    (print (Matrix:getRow certaintyMatrix 0))
-    (print (Matrix:getRowsNumber regionsMatrix))
-    (print (Matrix:getColumnsNumber regionsMatrix 1))
-    (print (Matrix:getElement certaintyMatrix 0 0))
+    ;; (print (Matrix:getRow certaintyMatrix 0))
+    ;; (print (Matrix:getRowsNumber regionsMatrix))
+    ;; (print (Matrix:getColumnsNumber regionsMatrix 1))
+    ;; (print (Matrix:getElement certaintyMatrix 0 0))
+    ;; (print Matrix )
     (let ((c certaintyMatrix)
         (pos (Matrix:makePosition 0 0)))
-        (print (Matrix:changeElement c pos 1))
-        (print (Matrix:getElement c 0 0))
+        ;; (print (Matrix:changeElement c pos 88))
+        (print (Matrix:getElement c pos))
+        (Matrix:printMatrix (Matrix:addElement c pos 88))
     )
  )
 )
