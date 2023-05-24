@@ -49,7 +49,11 @@
     )
 
     (print initial_pos)
-    (setq regions (ReadPuzzle:findRegions regionsMatrix certaintyMatrix '(()) initial_pos))
+    (print (Matrix:addElement '() initial_pos 88))
+    (format t "~%")
+    (Matrix:printMatrix regionsMatrix)
+    ;; (print (Matrix:getElement regionsMatrix initial_pos))
+    (setq regions (ReadPuzzle:findRegions regionsMatrix certaintyMatrix '() initial_pos))
     (print regions)
 
  )

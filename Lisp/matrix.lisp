@@ -44,7 +44,7 @@
 
 (defun getRowsNumber (matrix)
     (if (null matrix)
-        (error "Empty")
+        0
         (list-length matrix)
     )
 )
@@ -113,7 +113,9 @@
             ((or (< (myposition-row pos) 0) 
                  (< (myposition-col pos) 0) 
                  (> (myposition-row pos) (list-length matrix))
-                 (> (myposition-col pos) (list-length (car matrix)))) 
+                ;;  (and (< (myposition-row pos) (list-length matrix)) 
+                ;;     (> (myposition-col pos) (list-length (nth (myposition-col pos) matrix))))
+                ) 
                (error "Index out of bounds"))
             ((= (myposition-row pos) (list-length matrix))
                 (concatenate 'list matrix (cons (addElementList () (myposition-col pos) value) () ))

@@ -73,7 +73,8 @@
                 )
                 (setq element (Matrix:makePosition 0 0)
                 )
-             (Matrix:addElement regions pos element)
+            (Matrix:addElement regions pos element)
+
         )
         regions
     )
@@ -82,7 +83,7 @@
 (defun increaseSize (c regions)
     (let ((pos nil) (element nil))
                 (setq pos (Matrix:makePosition
-                        (parse-integer c)
+                        (regionNumber c)
                         0
                 ))
                 (setq element 
@@ -111,8 +112,8 @@
 (defun addToRegion (c regions pos)
     (let ((new_pos nil))
                 (setq new_pos (Matrix:makePosition
-                        (parse-integer c)
-                        (Matrix:getColumnsNumber regions (parse-integer c))
+                        (regionNumber c)
+                        (Matrix:getColumnsNumber regions (regionNumber c))
                 ))
              (Matrix:addElement regions new_pos pos)
     )
@@ -137,6 +138,7 @@
         (if (and (= (+ 1 (Matrix:positionCol pos)) (Matrix:getRowsNumber mat_reg))
                 (/= (+ 1 (Matrix:positionRow pos)) (Matrix:getRowsNumber mat_reg)))
             (let ((new_pos nil))
+            
                 (setq new_pos (Matrix:makePosition
                         (+ 1 (Matrix:positionRow pos))
                         0)
@@ -150,6 +152,7 @@
                         (Matrix:positionRow pos)
                         (+ 1 (Matrix:positionCol pos)))
                 )
+                    
                 (findRegions mat_reg mat_cert 
                     (treatCharacter (Matrix:getElement mat_reg pos) 
                         mat_cert regions pos) new_pos)
