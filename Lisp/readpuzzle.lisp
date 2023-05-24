@@ -6,6 +6,7 @@
              :createIntMatrix
              :isLetter
              :regionNumber
+             :findRegions
              ))
 
 (in-package :ReadPuzzle)
@@ -118,17 +119,41 @@
 )
 
 (defun treatCharacter (c mat_cert regions pos)
-     (if (not (isLetter c))
-        (let ((new_pos nil) (element nil))
-                (setq new_pos (Matrix:makePosition
-                        (regionNumber c)
-                        0)
-                )
-                (setq element 
-                    (PosUtils:increaseSecond (Matrix:getElement regions new_pos))
-                )
-             (Matrix:changeElement regions new_pos element)
+    (if (not (isLetter c))
+        (addToRegion c 
+            (increaseUnfilled c mat_cert (increaseSize c (newRegion c regions)) pos)
+            pos
         )
         regions
+    )
+)
+
+(defun findRegions (mat_reg mat_cert regions pos)
+    (if (and (= (+ 1 (Matrix:positionCol pos)) (Matrix:getRowsNumber mat_reg))
+            (= (+ 1 (Matrix:positionRow pos)) (Matrix:getRowsNumber mat_reg)))
+        (treatCharacter (Matrix:getElement mat_reg pos) 
+            mat_cert regions pos
+        )
+        (if (and (= (+ 1 (Matrix:positionCol pos)) (Matrix:getRowsNumber mat_reg))
+                (/= (+ 1 (Matrix:positionRow pos)) (Matrix:getRowsNumber mat_reg)))
+            (let ((new_pos nil))
+                (setq new_pos (Matrix:makePosition
+                        (+ 1 (Matrix:positionRow pos))
+                        0)
+                )
+                (findRegions mat_reg mat_cert 
+                    (treatCharacter (Matrix:getElement mat_reg pos) 
+                        mat_cert regions pos) new_pos)
+            )
+            (let ((new_pos nil))
+                (setq new_pos (Matrix:makePosition
+                        (Matrix:positionRow pos)
+                        (+ 1 (Matrix:positionCol pos)))
+                )
+                (findRegions mat_reg mat_cert 
+                    (treatCharacter (Matrix:getElement mat_reg pos) 
+                        mat_cert regions pos) new_pos)
+            )
+        )
     )
 )
