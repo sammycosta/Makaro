@@ -34,6 +34,7 @@
   "Retorna uma lista de palavras a partir de uma string."
   (split-string string #\Space))
 
+;; Cria uma matriz (lista de listas) de Strings a partir de uma lista de strings
 (defun createMatrix (list)
     (if (null list)
         ()
@@ -41,6 +42,7 @@
     )
 )
 
+;; Cria uma lista de Integers a partir de uma lista de Strings
 (defun listToInt (list)
     (if (null list)
         ()
@@ -48,6 +50,7 @@
     )
 )
 
+;; Cria uma matriz (lista de listas) de Integers a partir de uma lista de strings
 (defun createIntMatrix (list)
     (if (null list)
         ()
@@ -56,14 +59,18 @@
 )
 
 ;; --------
+
+;; Retorna True se for uma das letras utilizadas no mapeamento do jogo
 (defun isLetter (str)
     (or (string= str "R") (string= str "L") (string= str "D") (string= str "U") (string= str "X"))
 )
 
+;; Retorna o número da região (recebida como String)
 (defun regionNumber (str)
     (- (parse-integer str) 1)
 )
 
+;; Cria uma nova região caso ela ainda não exista, senão retorna a matriz de regiões inalterada
 (defun newRegion (c regions)
     (if (> (parse-integer c) (Matrix:getRowsNumber regions))
         (let ((pos nil) (element nil))
@@ -80,6 +87,7 @@
     )
 )
 
+;; Aumenta o tamanho da região (o primeiro elemento da primeira tupla armazenada na linha correspondente à região)
 (defun increaseSize (c regions)
     (let ((pos nil) (element nil))
                 (setq pos (Matrix:makePosition
@@ -93,6 +101,8 @@
     )
 )
 
+;; Aumenta o a quantidade de elementos não preenchidos na região
+;; (o segundo elemento da primeira tupla armazenada na linha correspondente à região)
 (defun increaseUnfilled (c mat_cert regions pos)
      (if (= (Matrix:getElement mat_cert pos) 0 )
         (let ((new_pos nil) (element nil))
@@ -109,6 +119,7 @@
     )
 )
 
+;; Adiciona uma posição a uma região e retorna a matrix de regiões
 (defun addToRegion (c regions pos)
     (let ((new_pos nil))
                 (setq new_pos (Matrix:makePosition
@@ -119,6 +130,8 @@
     )
 )
 
+;; Recebe um caractere (da matriz de regiões) e chama as funções acima para adicionar a posição 
+;; à região respectiva na matriz de regiões
 (defun treatCharacter (c mat_cert regions pos)
     (if (not (isLetter c))
         (addToRegion c 
@@ -129,6 +142,7 @@
     )
 )
 
+;; Percorre a matriz de regiões e passa os caracteres para a função acima
 (defun findRegions (mat_reg mat_cert regions pos)
     (if (and (= (+ 1 (Matrix:positionCol pos)) (Matrix:getRowsNumber mat_reg))
             (= (+ 1 (Matrix:positionRow pos)) (Matrix:getRowsNumber mat_reg)))
