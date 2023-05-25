@@ -5,6 +5,7 @@
 (require "ReadPuzzle" "./readpuzzle.lisp")
 (require "Matrix" "./matrix.lisp")
 (require "PosUtils" "./positionUtils.lisp")
+(require "Validations" "./validations.lisp")
 ;; (ql:quickload "alexandria")
 ;; (require 'alexandria)
 
@@ -42,10 +43,13 @@
     ;; (print (Matrix:getElement certaintyMatrix 0 0))
     ;; (print Matrix )
     (let ((c certaintyMatrix)
-        (pos (Matrix:makePosition 0 0)))
+        (pos (Matrix:makePosition 3 6))
+        (pos2 (Matrix:makePosition 3 5)))
         ;; (print (Matrix:changeElement c pos 88))
-        (print (Matrix:getElement c pos))
-        (Matrix:printMatrix (Matrix:addElement c pos 88))
+        ;; (print (Matrix:getElement c pos))
+        ;; (Matrix:printMatrix (Matrix:addElement c pos 88))
+        (print (Validations:validByArrow regionsMatrix certaintyMatrix pos pos2 1))
+        ;; (print ((Validations:getAroundList certaintyMatrix pos (Validations:getAimed regionsMatrix pos))))
     )
 
     (print initial_pos)
@@ -54,7 +58,7 @@
     (Matrix:printMatrix regionsMatrix)
     ;; (print (Matrix:getElement regionsMatrix initial_pos))
     (setq regions (ReadPuzzle:findRegions regionsMatrix certaintyMatrix '() initial_pos))
-    (print regions)
+    ;; (print regions)
 
  )
 )
