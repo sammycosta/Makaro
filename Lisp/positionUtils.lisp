@@ -33,7 +33,7 @@
 (defun decreaseFirst (position)
     (let ((pos nil))
                 (setq pos (Matrix:makePosition
-                        (- 1 (Matrix:positionRow position))
+                        (- (Matrix:positionRow position) 1)
                         (Matrix:positionCol position))
                 )
                 pos
@@ -54,7 +54,7 @@
     (let ((pos nil))
                 (setq pos (Matrix:makePosition
                         (Matrix:positionRow position)
-                        (- 1 (Matrix:positionCol position)))
+                        (- (Matrix:positionCol position) 1))
                 )
                 pos
     )
