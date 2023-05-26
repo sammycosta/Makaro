@@ -6,6 +6,7 @@
              :verifyBiggerAroundArrow
              :getAroundArrowsList
              :isValid
+             :isAdjacent
              ))
 
 (in-package :Validations)

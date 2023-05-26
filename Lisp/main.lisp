@@ -72,7 +72,11 @@
     ;; (print "saiu")
     ;; (Matrix:printMatrix (cdr finalResult))
 
-    ;; (print (CertainSolutions:fillMissingOne 0 (list certaintyMatrix regions)))
+    ;; (Matrix:printMatrix (car (CertainSolutions:fillMissingOne 0 (list certaintyMatrix regions))))
+    ;; (format t "~%")
+    ;; (Matrix:printMatrix (car (CertainSolutions:fillMissingTwo 0 (CertainSolutions:fillMissingOne 0 (list certaintyMatrix regions)))))
+    ;; (format t "~%")
+    (Matrix:printMatrix (car (CertainSolutions:certainties (list certaintyMatrix regions))))
     ;; (print regions)
 
  )
