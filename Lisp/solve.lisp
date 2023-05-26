@@ -54,12 +54,15 @@
 (defun tryAgainSameRegion (mat matRegions regions regionsPaths puzzleErrorList possiblePositions)
     (let* (
         (failedPath (last regionsPaths))
-        (newRegionsPath (butlast regionsPaths))
-        (newPuzzleErrorList (changePuzzleErrorList puzzleErrorList newRegionsPath failedPath))
-        (newMat (cleanRegion mat possiblePositions)))
+        (newRegionsPath (butlast regionsPaths)))
 
         (if (> (length failedPath) 0)
-            (backtracking newMat matRegions regions newRegionsPath newPuzzleErrorList)
+            (let* (
+                (newPuzzleErrorList (changePuzzleErrorList puzzleErrorList newRegionsPath failedPath))
+                (newMat (cleanRegion mat possiblePositions)))
+
+                (backtracking newMat matRegions regions newRegionsPath newPuzzleErrorList)
+            )
             (list nil mat newPuzzleErrorList)
         )
     )
@@ -69,6 +72,7 @@
 ;; Caso falhe, eu tento de novo para a mesma região
 (defun continueBacktracking (mat matRegions regions regionsPaths puzzleErrorList possiblePositions)
     (print "continuou")
+    (Matrix:printMatrix mat)
     (let* (
         (newRegions (cdr regions))
         ;; Atualizar pra usar certezas dps
@@ -86,27 +90,27 @@
 
 ;; Inicio do backtracking de regiões
 (defun backtracking (mat matRegions regions regionsPaths puzzleErrorList)
-    (let* (
-        (wrongPaths (makeWrongPathList regionsPaths puzzleErrorList))
-        (missingNumbersResult (CertainSolutions:missingNumbers (car regions) mat))
-        (possibleNumbers (car missingNumbersResult))
-        (possiblePositions (cadr missingNumbersResult))
-        (solveRegionResult (SolveRegion:solveByRegion mat matRegions regions regionsPaths wrongPaths possibleNumbers possiblePositions))
-        (succeeded (car solveRegionResult))
-        (newMat (cadr solveRegionResult))
-        (newRegPaths (caddr solveRegionResult)))
+    (print "backtracking solve")
+    (Matrix:printMatrix mat)
+    (print (length regions))
+    (if (equal (length regions) 0)
+        (list t mat puzzleErrorList))
 
-        (cond 
-            ((equal (length regions) 0)
-            (list t mat puzzleErrorList))
+        (let* (
+            (wrongPaths (makeWrongPathList regionsPaths puzzleErrorList))
+            (missingNumbersResult (CertainSolutions:missingNumbers (car regions) mat))
+            (possibleNumbers (car missingNumbersResult))
+            (possiblePositions (cadr missingNumbersResult))
+            (solveRegionResult (SolveRegion:solveByRegion mat matRegions regions regionsPaths wrongPaths possibleNumbers possiblePositions))
+            (succeeded (car solveRegionResult))
+            (newMat (cadr solveRegionResult))
+            (newRegPaths (caddr solveRegionResult)))
 
-            (succeeded
-            (continueBacktracking newMat matRegions regions newRegPaths puzzleErrorList possiblePositions))
-
-            (t
-            (list nil mat puzzleErrorList))   
+            (print "voltou aqui?")
+            (if succeeded
+                (continueBacktracking newMat matRegions regions newRegPaths puzzleErrorList possiblePositions)
+                (list nil mat puzzleErrorList))   
         )
-    )
 )
 
 (defun solve (mat matRegions regions)

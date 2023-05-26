@@ -22,22 +22,6 @@
           ((equal (car l1) (car l2)) (isPrefixOf (cdr l1) (cdr l2)))
           (t nil)))
 
-
-;; elemIndex : t [t] -> t
-;; Retorna o índice do elemento na lista, ou -1 se não existir
-(defun elemIndex (elem lst)
-    (let ((index 0))
-        (while (and (not (null lst)) (not (equal elem (car lst))))
-            (setq index (+ index 1))
-            (setq lst (cdr lst))
-        )
-        (if (null lst)
-            -1
-            index
-        )
-    )
-)
-
 ;; replicate : int t -> [t]
 ;; Retorna uma lista com n elementos iguais a value
 (defun replicate (n value)
@@ -108,7 +92,7 @@
     (if (null aux)
         major
         (let ((newMajorList (filter (lambda (x) (not (equal x (car aux)))) major)))
-            removeItemsFromList newMajorList (cdr aux)
+            (removeItemsFromList newMajorList (cdr aux))
         )
     )
 )
@@ -169,14 +153,16 @@
         (newRegion (cadr cleaned))
         (tryFillResult (tryFillNumber newMatrix matRegions num possiblePositions region))
         (succeeded (car tryFillResult))
-        (pos (cadr tryFillResult))
-        (fillResult (fillNumber newMatrix num pos newRegion))
-        (returnMat (car fillResult))
-        (returnReg (cadr fillResult))
-        (newPath (append (butlast currentPath) (list (elemIndex (list num pos) possibilities))))) ; FAZER
+        (pos (cadr tryFillResult)))
 
         (if succeeded
-            (list returnMat returnReg newPath pos)
+            (let* (
+                (fillResult (fillNumber newMatrix num pos newRegion))
+                (returnMat (car fillResult))
+                (returnReg (cadr fillResult))
+                (newPath (append (butlast currentPath) (list (position (list num pos) possibilities)))))
+                (list returnMat returnReg newPath pos)
+            )
             (list mat region currentPath lastPosition)
         )
     )
@@ -210,10 +196,10 @@
 
         (if (> (length positionErrors) 0)
             (if (equal pathError path)
-                (changeElementList errorList order (list path (append positionErrors (list lastPos))))
-                (changeElementList errorList order (list path (list lastPos)))
+                (Matrix:changeElementList errorList order (list path (append positionErrors (list lastPos))))
+                (Matrix:changeElementList errorList order (list path (list lastPos)))
             )
-            (changeElementList errorList order (list path (list lastPos)))
+            (Matrix:changeElementList errorList order (list path (list lastPos)))
         )
     )
 )
@@ -240,9 +226,9 @@
     (let* (
         (fillResult (fillWholeRegion mat matRegions (cdr numbers) possiblePositions region possibilities path errorList wrongPaths))
         (succeeded (car fillResult))
-        (newMat (cdr fillResult))
-        (newRegion (cadr fillResult))
-        (newPath (caddr fillResult)))
+        (newMat (cadr fillResult))
+        (newRegion (caddr fillResult))
+        (newPath (cadddr fillResult)))
 
         (if succeeded
             (list t newMat newRegion newPath)
@@ -259,21 +245,25 @@
         (newPossiblePositions (removeErrorPositions path errorList possiblePositions))
         (tryFillResult (tryFillNumber mat matRegions head newPossiblePositions region))
         (succeeded (car tryFillResult))
-        (pos (cadr tryFillResult))
-        (fillResult (fillNumber mat head pos region))
-        (newMat (car fillResult))
-        (newRegion (cadr fillResult))
-        (currentPath (append path (list (elemIndex (list head pos) possibilities))))
-        (checkResult (checkWrongPaths newMat matRegions currentPath wrongPaths pos newPossiblePositions possibilities head newRegion))
-        (returnMat (car checkResult))
-        (returnReg (cadr checkResult))
-        (newPath (caddr checkResult))
-        (newPosition (cadddr checkResult))
-        (lastPos (list newPosition (elemIndex newPosition possiblePositions)))
-        (possiblePosNext (removeItemsFromList possiblePositions (list newPosition))))
+        (pos (cadr tryFillResult)))
 
         (if succeeded 
-            (continueBackTrackingTryFillNumber returnMat matRegions numbers possiblePosNext returnReg possibilities newPath errorList wrongPaths lastPos)
+            (let* (
+                (fillResult (fillNumber mat head pos region))
+                (newMat (car fillResult))
+                (newRegion (cadr fillResult))
+                (currentPath (append path (list (position (list head pos) possibilities))))
+                (checkResult (checkWrongPaths newMat matRegions currentPath wrongPaths pos newPossiblePositions possibilities head newRegion))
+                (returnMat (car checkResult))
+                (returnReg (cadr checkResult))
+                (newPath (caddr checkResult))
+                (newPosition (cadddr checkResult))
+                (lastPos (list newPosition (position newPosition possiblePositions)))
+                (possiblePosNext (removeItemsFromList possiblePositions (list newPosition))))
+
+                (continueBackTrackingTryFillNumber returnMat matRegions numbers possiblePosNext returnReg possibilities newPath errorList wrongPaths lastPos)
+            )
+
             (list nil mat region path)
         )    
     )
@@ -303,9 +293,9 @@
         (errorList (replicate (length possibleNumbers) (list '() '())))
         (fillResult (fillWholeRegion mat matRegions possibleNumbers possiblePositions region possibilities '() errorList wrongPaths))
         (succeeded (car fillResult))
-        (newMat (cdr fillResult))
-        (newReg (cadr fillResult))
-        (newPath (caddr fillResult))
+        (newMat (cadr fillResult))
+        (newReg (caddr fillResult))
+        (newPath (cadddr fillResult))
         (newRegPaths (append regionsPaths (list newPath))))
 
         (if succeeded 

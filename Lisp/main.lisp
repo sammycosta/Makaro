@@ -67,11 +67,10 @@
     ;; (print (Matrix:getElement regionsMatrix initial_pos))
     (setq regions (ReadPuzzle:findRegions regionsMatrix certaintyMatrix '() initial_pos))
     ;; (Matrix:printMatrix certaintyMatrix)
-    (print (position '("aa" "vv") '(nil '("aa" "vv")) :test #'equalp))
 
-    (setq finalResult (Solve:solve certaintyMatrix regionsMatrix regions))
-    (Matrix:printMatrix (cdr finalResult))
-
+    ;; (setq finalResult (Solve:solve certaintyMatrix regionsMatrix regions))
+    ;; (print "saiu")
+    ;; (Matrix:printMatrix (cdr finalResult))
 
     ;; (print (CertainSolutions:fillMissingOne 0 (list certaintyMatrix regions)))
     ;; (print regions)
