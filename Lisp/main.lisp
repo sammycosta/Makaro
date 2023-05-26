@@ -7,6 +7,7 @@
 (require "PosUtils" "./positionUtils.lisp")
 (require "Validations" "./validations.lisp")
 (require "CertainSolutions" "./certainSolutions.lisp")
+(require "SolveRegion" "./solveRegion.lisp")
 
 ;; (ql:quickload "alexandria")
 ;; (require 'alexandria)

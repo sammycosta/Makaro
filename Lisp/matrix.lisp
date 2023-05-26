@@ -4,8 +4,10 @@
              :getRowsNumber
              :getColumnsNumber
              :getElement
+             :changeElementList
              :changeElement
              :makePosition
+             :addElementList
              :addElement
              :printMatrix
              :positionRow
