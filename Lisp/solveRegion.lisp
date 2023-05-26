@@ -103,7 +103,7 @@
 (defun forAllWrongPaths (currentPath wrongPaths possiblePositions possibilities hasAltered)
     (if (null wrongPaths)
         (list possiblePositions hasAltered)
-        (let ((positionToRemove (cadr (nth (- (length currentPath) 1) possibilities)))
+        (let* ((positionToRemove (cadr (nth (- (length currentPath) 1) possibilities)))
               (newPossiblePositions (removeItemsFromList possiblePositions (list positionToRemove))))
             (if (isPrefixOf currentPath (car wrongPaths))
                 (forAllWrongPaths currentPath (cdr wrongPaths) newPossiblePositions possibilities t)

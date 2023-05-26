@@ -40,7 +40,7 @@
         (regionPathError (car puzzleError))
         (pathErrors (cadr puzzleError)))
 
-        (if (> (length pathErrors 0))
+        (if (> (length pathErrors) 0)
             (if (equal regionPathError regionsPaths)
                 (Matrix:changeElementList puzzleErrorList order (list regionsPaths (append pathErrors (list failedPath))))
                 (Matrix:changeElementList puzzleErrorList order (list regionsPaths (list failedPath)))
@@ -54,13 +54,12 @@
 (defun tryAgainSameRegion (mat matRegions regions regionsPaths puzzleErrorList possiblePositions)
     (let* (
         (failedPath (last regionsPaths))
-        (newRegionsPath (butlast regionsPaths)))
+        (newRegionsPath (butlast regionsPaths))
+        (newPuzzleErrorList (changePuzzleErrorList puzzleErrorList newRegionsPath failedPath)))
 
         (if (> (length failedPath) 0)
             (let* (
-                (newPuzzleErrorList (changePuzzleErrorList puzzleErrorList newRegionsPath failedPath))
                 (newMat (cleanRegion mat possiblePositions)))
-
                 (backtracking newMat matRegions regions newRegionsPath newPuzzleErrorList)
             )
             (list nil mat newPuzzleErrorList)
@@ -94,7 +93,7 @@
     (Matrix:printMatrix mat)
     (print (length regions))
     (if (equal (length regions) 0)
-        (list t mat puzzleErrorList))
+        (list t mat puzzleErrorList)
 
         (let* (
             (wrongPaths (makeWrongPathList regionsPaths puzzleErrorList))
@@ -111,6 +110,7 @@
                 (continueBacktracking newMat matRegions regions newRegPaths puzzleErrorList possiblePositions)
                 (list nil mat puzzleErrorList))   
         )
+    )
 )
 
 (defun solve (mat matRegions regions)
