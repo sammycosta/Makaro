@@ -1,11 +1,10 @@
 (defpackage :SolveRegion
     (:use :common-lisp)
-    (:export :solveByRegion))
+    (:export :solveByRegion
+            :replicate))
 
 (in-package :SolveRegion)
 
-(require "PosUtils" "./positionUtils.lisp")
-(require "Matrix" "./matrix.lisp")
 ;; AUXILIARES CRIADAS NA VERSAO LISP
 
 ;; filter : (int -> bool) [int] -> [int]
@@ -23,12 +22,6 @@
           ((equal (car l1) (car l2)) (isPrefixOf (cdr l1) (cdr l2)))
           (t nil)))
 
-;; ;; butlast : [t] -> [t]
-;; ;; Retorna a lista sem o último elemento
-;; (defun butlast (lst)
-;;   (if (null (cdr lst))
-;;       nil
-;;       (cons (car lst) (butlast (cdr lst)))))
 
 ;; elemIndex : t [t] -> t
 ;; Retorna o índice do elemento na lista, ou -1 se não existir
@@ -126,7 +119,7 @@
 (defun forAllWrongPaths (currentPath wrongPaths possiblePositions possibilities hasAltered)
     (if (null wrongPaths)
         (list possiblePositions hasAltered)
-        (let ((positionToRemove (cadr (nth possibilities (- (length currentPath) 1))))
+        (let ((positionToRemove (cadr (nth (- (length currentPath) 1) possibilities)))
               (newPossiblePositions (removeItemsFromList possiblePositions (list positionToRemove))))
             (if (isPrefixOf currentPath (car wrongPaths))
                 (forAllWrongPaths currentPath (cdr wrongPaths) newPossiblePositions possibilities t)
@@ -144,7 +137,7 @@
 ;; (a partir da errorList). Retornar a lista de posições alterada (ou não).
 (defun removeErrorPositions (path errorList possiblePositions)
     (let* ((order (length path)) ; Referente ao indíce do número na lista de erros
-            (currentError (nth errorList order)) ; Tupla [[int], [myposition]] (regionError)
+            (currentError (nth order errorList)) ; Tupla [[int], [myposition]] (regionError)
             (lenErrorList (length (cadr currentError)))
             (isCurrentError (and (> order 0) (> lenErrorList 0) (equal (car currentError) path)))
             (isFirstNumberError (and (= order 0) (> lenErrorList 0))))

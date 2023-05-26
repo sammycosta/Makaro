@@ -1,7 +1,9 @@
 (defpackage :CertainSolutions
     (:use :common-lisp)
     (:export :fillMissingOne
-                            ))
+            :missingNumbers
+            :iterateList
+            ))
 
 (in-package :CertainSolutions)
 
@@ -14,14 +16,14 @@
 ;; Função auxiliar de missingNumbers que itera sobre a lista de números possíveis e sobre a lista de regiões,
 ;; retornando os números ainda não utilizados em uma região e as posições não preenchidas
 (defun iterateList (possibilities empty_pos rec_list mat)
-    (let ((num (Matrix:getElement mat (car rec_list))))
-        (if (> (list-length rec_list) 0)
+    (if (> (length rec_list) 0)
+        (let ((num (Matrix:getElement mat (car rec_list))))
             (if (/= num 0)
                 (iterateList (set-difference possibilities (list num)) empty_pos (cdr rec_list) mat)
-                (iterateList possibilities (concatenate 'list empty_pos (list (car rec_list))) (cdr rec_list) mat)
+                (iterateList possibilities (append empty_pos (list (car rec_list))) (cdr rec_list) mat)
             )
-            (list possibilities empty_pos)
         )
+        (list possibilities empty_pos)
     )
 )
 

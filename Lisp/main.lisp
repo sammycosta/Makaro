@@ -8,7 +8,7 @@
 (require "Validations" "./validations.lisp")
 (require "CertainSolutions" "./certainSolutions.lisp")
 (require "SolveRegion" "./solveRegion.lisp")
-
+(require "Solve" "./solve.lisp")
 ;; (ql:quickload "alexandria")
 ;; (require 'alexandria)
 
@@ -24,7 +24,8 @@
         (regionsMatrix '())
         (certaintyMatrix '())
         (regions '())
-        (initial_pos (Matrix:makePosition 0 0)))
+        (initial_pos (Matrix:makePosition 0 0))
+        (finalResult '()))
     (setq contents_list (readfile "../puzzle_01.txt"))
     (setq size (parse-integer (car contents_list)))
     (print size)
@@ -65,8 +66,14 @@
     
     ;; (print (Matrix:getElement regionsMatrix initial_pos))
     (setq regions (ReadPuzzle:findRegions regionsMatrix certaintyMatrix '() initial_pos))
-    (Matrix:printMatrix certaintyMatrix)
-    (print (CertainSolutions:fillMissingOne 0 (list certaintyMatrix regions)))
+    ;; (Matrix:printMatrix certaintyMatrix)
+    (print (position '("aa" "vv") '(nil '("aa" "vv")) :test #'equalp))
+
+    (setq finalResult (Solve:solve certaintyMatrix regionsMatrix regions))
+    (Matrix:printMatrix (cdr finalResult))
+
+
+    ;; (print (CertainSolutions:fillMissingOne 0 (list certaintyMatrix regions)))
     ;; (print regions)
 
  )
