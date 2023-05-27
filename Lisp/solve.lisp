@@ -34,6 +34,7 @@
 
 ;; Atualiza a lista de erros totais baseado em um caminho que causou uma falha em uma região específica
 (defun changePuzzleErrorList (puzzleErrorList regionsPaths failedPath)
+    ;; buscar erro aqui
     (let* (
         (order (length regionsPaths))
         (puzzleError (nth order puzzleErrorList))
@@ -53,7 +54,7 @@
 ;; E a puzzleErrorList atualizada com a falha.
 (defun tryAgainSameRegion (mat matRegions regions regionsPaths puzzleErrorList possiblePositions)
     (let* (
-        (failedPath (last regionsPaths))
+        (failedPath (car (last regionsPaths)))
         (newRegionsPath (butlast regionsPaths)) ;; pop
         (newPuzzleErrorList (changePuzzleErrorList puzzleErrorList newRegionsPath failedPath)))
 
@@ -70,12 +71,12 @@
 ;; Continuação do backtracking: após o preenchimento dar certo, eu tento um próximo.
 ;; Caso falhe, eu tento de novo para a mesma região
 (defun continueBacktracking (mat matRegions regions regionsPaths puzzleErrorList possiblePositions)
-    (print "continuou")
-    (Matrix:printMatrix mat)
     (let* (
         (newRegions (cdr regions))
-        ;; Atualizar pra usar certezas dps
-        (backtrackingResult (backtracking mat matRegions newRegions regionsPaths puzzleErrorList))
+        (certaintiesResult (CertainSolutions:certainties (list mat newRegions)))
+        (auxMat (car certaintiesResult))
+        (auxReg (cadr certaintiesResult))
+        (backtrackingResult (backtracking auxMat matRegions auxReg regionsPaths puzzleErrorList))
         (succeeded (car backtrackingResult))
         (newMat (cadr backtrackingResult))
         (newPuzzleErrorList (caddr backtrackingResult)))
@@ -89,9 +90,6 @@
 
 ;; Inicio do backtracking de regiões
 (defun backtracking (mat matRegions regions regionsPaths puzzleErrorList)
-    (print "backtracking solve")
-    (Matrix:printMatrix mat)
-    (print (length regions))
     (if (equal (length regions) 0)
         (list t mat puzzleErrorList)
 
@@ -105,7 +103,6 @@
             (newMat (cadr solveRegionResult))
             (newRegPaths (caddr solveRegionResult)))
 
-            (print "voltou aqui?")
             (if succeeded
                 (continueBacktracking newMat matRegions regions newRegPaths puzzleErrorList possiblePositions)
                 (list nil mat puzzleErrorList))   
@@ -113,6 +110,7 @@
     )
 )
 
+;; Inicia a solução do puzzle
 (defun solve (mat matRegions regions)
     (let* (
         (puzzleErrorList (SolveRegion:replicate (length regions) (list '() '())))

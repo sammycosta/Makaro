@@ -8,14 +8,14 @@
 
 ;; AUXILIARES CRIADAS NA VERSAO LISP
 
-;; filter : (int -> bool) [int] -> [int]
+;; filter : (t -> bool) [t] -> [t]
 ;; não testado; mas é pra ser equivalente a do professor
 (defun filter (f l)
     (cond ((null l) nil)
           ((funcall f (car l)) (cons (car l) (filter f (cdr l))))
           (t (filter f (cdr l)))))
 
-;; isPrefixOf : [int] [int] -> bool
+;; isPrefixOf : [t] [t] -> bool
 ;; Retorna se a primeira lista é prefixo da segunda (não testada)
 (defun isPrefixOf (l1 l2)
     (cond ((null l1) t)
@@ -34,7 +34,6 @@
 
 ;; FIM AUXILIARES
 
-;; positionNumber : int [myposition] [[int, myposition]] -> [[int, myposition]]
 ;; Junta um número com várias posições, criando uma lista de possibilidades
 (defun positionNumber (num positions possibilities)
     (if (null positions)
@@ -45,7 +44,6 @@
     )
 )
 
-;; numberPosition : [int] [myposition] [[int, myposition]] -> [[int, myposition]]
 ;; Chamada positionNumber para todos os números na lista
 (defun numberPosition (numbers possiblePositions possibilities)
     (if (null numbers)
@@ -56,15 +54,11 @@
     )
 )
 
-;; getPossibilitiesList : [int] [myposition] -> [[int, myposition]]
 ;; Faz a lista de possibilidades a partir de uma lista de números e uma de posições
 (defun getPossibilitiesList (possibleNumbers possiblePositions)
     (numberPosition possibleNumbers possiblePositions '())
 )
 
-;; VERIFICAR DEPOIS SE REGIÃO VAI SER LISTA DE MYPOSITION OU LIST DE [INT, INT]
-;; FAZER ISVALID DO VALIDATIONS
-;; tryFillNumber : [[int]] [[string]] int [[myposition]] [myposition] -> [bool, myposition]
 ;; Tenta preencher um número em todas as posições até conseguir
 (defun tryFillNumber (mat matRegions num positions region)
     (if (null positions)
@@ -76,7 +70,6 @@
     )
 )
 
-;; fillNumber : [[int]] int myposition [myposition] -> [[int]]
 ;; Dada uma posição e número, retorna a matriz e a região com o número colocado na posição;
 (defun fillNumber (mat num pos region)
     (let* ((newMatrix (Matrix:changeElement mat pos num))
@@ -86,7 +79,6 @@
     )
 )
 
-;; removeItemsFromList : [int] [int] -> [int]
 ;; Remove itens da lista principal se existirem na auxiliar. Retorna a lista modificada
 ;; se possível testar, e pro caso onde na major nao tem nada da aux
 (defun removeItemsFromList (major aux)
@@ -98,7 +90,6 @@
     )
 )
 
-;; forAllWrongPaths : [Int] [[Int]] [myposition] [int, myposition] bool -> [[myposition], bool]
 ;; Retorna a lista de posições possíveis alterada e se alterou ela, caso:
 ;; O caminho que estou agora está seguindo um caminho que já deu errado antes.
 (defun forAllWrongPaths (currentPath wrongPaths possiblePositions possibilities hasAltered)
@@ -106,6 +97,7 @@
         (list possiblePositions hasAltered)
         (let* ((positionToRemove (cadr (nth (- (length currentPath) 1) possibilities)))
               (newPossiblePositions (removeItemsFromList possiblePositions (list positionToRemove))))
+                
             (if (isPrefixOf currentPath (car wrongPaths))
                 (forAllWrongPaths currentPath (cdr wrongPaths) newPossiblePositions possibilities t)
                 (forAllWrongPaths currentPath (cdr wrongPaths) possiblePositions possibilities hasAltered)
@@ -117,14 +109,13 @@
 
 ;; INICIO BACKTRACKING ----------------------------------------------------------
 
-;; removeErrorPositions : [int] [[[int], [myposition]]] [myposition] -> [myposition]
 ;; Dado um caminho, verificar se não há posições falhas a serem removidas nesse ponto da árvore.
 ;; (a partir da errorList). Retornar a lista de posições alterada (ou não).
 (defun removeErrorPositions (path errorList possiblePositions)
     (let* ((order (length path)) ; Referente ao indíce do número na lista de erros
             (currentError (nth order errorList)) ; Tupla [[int], [myposition]] (regionError)
             (lenErrorList (length (cadr currentError)))
-            (isCurrentError (and (> order 0) (> lenErrorList 0) (equal (car currentError) path)))
+            (isCurrentError (and (> order 0) (> lenErrorList 0) (equalp (car currentError) path)))
             (isFirstNumberError (and (= order 0) (> lenErrorList 0))))
         (if (or isCurrentError isFirstNumberError)
             (removeItemsFromList possiblePositions (cadr currentError))
@@ -133,7 +124,6 @@
     )
 )
 
-;; cleanFillNumber : [[int]] [myposition] myposition -> [[[int]], [myposition]]
 ;; Retorna a matriz de regiões e a região sem o preenchimento da posição dada
 (defun cleanFillNumber (mat region pos)
     (let* ((newMatrix (Matrix:changeElement mat pos 0))
@@ -144,8 +134,6 @@
 )
 
 
-;; tryAgainFillNumber :: [[int] [[string]]] int [myposition] [myposition] myposition [int] [[int, myposition]] 
-                        ; -> [[[int]], [myposition], [int], myposition]
 ;; Tenta um novo preenchimento após um anterior pois está seguindo um caminho errado (wrongPath)
 (defun tryAgainFillNumber (mat matRegions num possiblePositions region lastPosition currentPath possibilities)
     (let* (
@@ -169,8 +157,7 @@
     )
 )
 
-;; checkWrongPaths : [[int]] [[string]] [int] [[int]] myposition [myposition] [[int, myposition]] int [myposition] -> 
-                    ; [[[int]] [myposition] [int] myposition]
+
 ;; Conseguiu preencher. Agora, chamar a forAllWrongPaths para checar se está seguindo um caminho falha, 
 ;; E caso sim, tenta se livrar desse caso chamando tryAgainFillNumber
 (defun checkWrongPaths (mat matRegions path wrongPaths lastPosition possiblePositions possibilities num region)
@@ -186,7 +173,6 @@
     )
 )
 
-;; changeErrorList : [[int], [myposition]] myposition [int] -> [[int], [myposition]]
 ;; Altera errorList de região baseado numa posição que deu erro para o caminho atual
 (defun changeErrorList (errorList lastPos path)
     (let* (
@@ -205,7 +191,6 @@
     )
 )
 
-;; tryAgainSameNumber 
 ;; Falhou, chamar backtracking de novo para o mesmo número com a matriz e caminhos limpos 
 ;; E a errorList atualizada com a falha.
 (defun tryAgainSameNumber (mat matRegions possibleNumbers possiblePositions region possibilities path errorList wrongPaths lastPos)
@@ -279,14 +264,14 @@
         (list nil mat region path))
 
         ((and (= (length possibleNumbers) 0) (= (PosUtils:getSecond (car region)) 0))
-        (list (not (member path wrongPaths)) mat region path))
+        (list (not (member path wrongPaths :test #'equalp)) mat region path))
 
         (t
         (backtrackingTryFillNumber mat matRegions possibleNumbers possiblePositions region possibilities path errorList wrongPaths))
     )
 )
 
-
+;; Inicia a solução de uma região, retornando se falhou ou não (com os valores alterados ou inalterados)
 (defun solveByRegion (mat matRegions regions regionsPaths wrongPaths possibleNumbers possiblePositions)
     (let* (
         (region (car regions))
