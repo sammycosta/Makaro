@@ -115,7 +115,7 @@
     (let* ((order (length path)) ; Referente ao indíce do número na lista de erros
             (currentError (nth order errorList)) ; Tupla [[int], [myposition]] (regionError)
             (lenErrorList (length (cadr currentError)))
-            (isCurrentError (and (> order 0) (> lenErrorList 0) (equalp (car currentError) path)))
+            (isCurrentError (and (> order 0) (> lenErrorList 0) (equal (car currentError) path)))
             (isFirstNumberError (and (= order 0) (> lenErrorList 0))))
         (if (or isCurrentError isFirstNumberError)
             (removeItemsFromList possiblePositions (cadr currentError))
