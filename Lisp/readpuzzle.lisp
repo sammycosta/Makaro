@@ -11,8 +11,8 @@
 
 (in-package :ReadPuzzle)
 
-(defun split-string (string &optional (delimiter #\Space))
-  "Divide uma string em uma lista de substrings com base no separador especificado."
+;; Divide uma string em uma lista de substrings com base no separador especificado."
+(defun splitString (string &optional (delimiter #\Space))
   (if (string= string "")
       '()
       (let ((start 0)
@@ -26,9 +26,9 @@
                        (setq start end))))
         (nreverse result))))
 
+;; Retorna uma lista de palavras a partir de uma string
 (defun getListFromStr (string)
-  "Retorna uma lista de palavras a partir de uma string."
-  (split-string string #\Space))
+  (splitString string #\Space))
 
 ;; Cria uma matriz (lista de listas) de Strings a partir de uma lista de strings
 (defun createMatrix (list)
