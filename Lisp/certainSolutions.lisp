@@ -1,19 +1,9 @@
 (defpackage :CertainSolutions
     (:use :common-lisp)
-    (:export :fillMissingOne
-            :missingNumbers
-            :iterateList
-            :fillMissingTwo
-            :certainties
-            ))
+    (:export :missingNumbers
+            :certainties))
 
 (in-package :CertainSolutions)
-
-(require "Matrix" "./matrix.lisp")
-(require "PosUtils" "./positionUtils.lisp")
-(require "Validations" "./validations.lisp")
-
-
 
 ;; Função auxiliar de missingNumbers que itera sobre a lista de números possíveis e sobre a lista de regiões,
 ;; retornando os números ainda não utilizados em uma região e as posições não preenchidas

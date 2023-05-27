@@ -11,10 +11,6 @@
 
 (in-package :ReadPuzzle)
 
-(require "Matrix" "./matrix.lisp")
-(require "PosUtils" "./positionUtils.lisp")
-
-
 (defun split-string (string &optional (delimiter #\Space))
   "Divide uma string em uma lista de substrings com base no separador especificado."
   (if (string= string "")

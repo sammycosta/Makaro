@@ -6,7 +6,6 @@
 
 (require "SolveRegion" "./solveRegion.lisp")
 
-
 ;; Cria uma lista de caminhos errados na região específica a partir da lista total de puzzleError
 (defun makeWrongPathList (regionsPaths regionErrorList)
     (let* (

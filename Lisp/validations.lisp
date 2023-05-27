@@ -6,14 +6,9 @@
              :verifyBiggerAroundArrow
              :getAroundArrowsList
              :isValid
-             :isAdjacent
-             ))
+             :isAdjacent))
 
 (in-package :Validations)
-
-(require "Matrix" "./matrix.lisp")
-(require "PosUtils" "./positionUtils.lisp")
-(require "ReadPuzzle" "./readpuzzle.lisp")
 
 ;; Dada uma posição de seta, retorna a posição que ela aponta.
 (defun getAimed (matRegions arrowPosition)
@@ -36,26 +31,6 @@
     )
 )
 
-;; Dada uma posição de seta, retorna a lista de números ao redor que não é o apontado
-;; (defun getAroundList (mat arrowPosition aimedPosition)
-;;     (let ((n (Matrix:getRowsNumber mat))
-;;         (offsets '((1 0) (-1 0) (0 1) (0 -1))))
-;;         (mapcan #'(lambda (offset)
-;;                     (let* ((arrowFirst (PosUtils:getFirst arrowPosition))
-;;                         (arrowSecond (PosUtils:getSecond arrowPosition))
-;;                         (offsetFirst (car offset))
-;;                         (offsetSecond (cadr offset))
-;;                         (print offsetFirst)
-;;                         (position (Matrix:makePosition
-;;                                     (+ arrowFirst offsetFirst)
-;;                                     (+ arrowSecond offsetSecond))))
-;;                     (when (and (<= 0 (PosUtils:getFirst position) (- n 1))
-;;                                 (<= 0 (PosUtils:getSecond position) (- n 1))
-;;                                 (not (equalp position aimedPosition)))
-;;                         (list (Matrix:getElement mat position)))))
-;;                 offsets)
-;;     )
-;; )   
 
 ;; Dada uma posição de seta, retorna a lista de números ao redor que não é o apontado
 (defun getAroundList (mat arrowPosition aimedPosition)

@@ -1,9 +1,8 @@
-(require "ReadPuzzle" "./readpuzzle.lisp")
 (require "Matrix" "./matrix.lisp")
 (require "PosUtils" "./positionUtils.lisp")
+(require "ReadPuzzle" "./readpuzzle.lisp")
 (require "Validations" "./validations.lisp")
 (require "CertainSolutions" "./certainSolutions.lisp")
-(require "SolveRegion" "./solveRegion.lisp")
 (require "Solve" "./solve.lisp")
 
 (defun readFile (file_name)

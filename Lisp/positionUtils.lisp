@@ -5,12 +5,11 @@
              :increaseFirst
              :increaseSecond
              :decreaseFirst
-             :decreaseSecond
-                ))
+             :decreaseSecond))
 
 (in-package :PosUtils)
 
-(load "./matrix.lisp")
+(require "Matrix" "./matrix.lisp")
 
 (defun getFirst (position)
     (Matrix:positionRow position)
