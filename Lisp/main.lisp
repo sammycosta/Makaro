@@ -49,29 +49,36 @@
     (let* ((c certaintyMatrix)
         (pos (Matrix:makePosition 6 7))
         (pos2 (Matrix:makePosition 0 4))
+        (pos3 (Matrix:makePosition 6 7))
         (n 7)
-        (a (loop for i from 1 to n collect i)))
+        (a (loop for i from 1 to n collect i))
+        (lista_teste (list (list 2 pos) (list 1 pos2) (list 7 pos)
+        (list 3 pos2))))
         ;; (print (Matrix:changeElement c pos 88))
         ;; (print (Matrix:getElement c pos))
         ;; (Matrix:printMatrix (Matrix:addElement c pos 88))
         ;; (print (Validations:validByArrow regionsMatrix certaintyMatrix pos pos2 5))
         ;; (print (Validations:getAroundList certaintyMatrix pos (Validations:getAimed regionsMatrix pos)))
-        (print (Validations:isValid certaintyMatrix regionsMatrix 1 pos2))
-        (print a)
+        ;; (print (Validations:isValid certaintyMatrix regionsMatrix 1 pos2))
+        ;; (print a)
+        (print (position (list 7 pos3) lista_teste :test #'equalp))
     )
 
     
-    (print (Matrix:addElement '() initial_pos 88))
-    (format t "~%")
+    ;; (print (Matrix:addElement '() initial_pos 88))
+    ;; (format t "~%")
     
-    ;; (print (Matrix:getElement regionsMatrix initial_pos))
-    (setq regions (ReadPuzzle:findRegions regionsMatrix certaintyMatrix '() initial_pos))
-    ;; (Matrix:printMatrix certaintyMatrix)
+    ;; ;; (print (Matrix:getElement regionsMatrix initial_pos))
+    ;; (setq regions (ReadPuzzle:findRegions regionsMatrix certaintyMatrix '() initial_pos))
+    ;; ;; (Matrix:printMatrix certaintyMatrix)
+
+    
 
     (setq finalResult (Solve:solve certaintyMatrix regionsMatrix regions))
     (print "saiu")
     (format t "~%")
     (Matrix:printMatrix (cadr finalResult))
+    
 
     ;; (Matrix:printMatrix (car (CertainSolutions:fillMissingOne 0 (list certaintyMatrix regions))))
     ;; (format t "~%")

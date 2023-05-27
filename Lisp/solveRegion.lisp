@@ -1,7 +1,8 @@
 (defpackage :SolveRegion
     (:use :common-lisp)
     (:export :solveByRegion
-            :replicate))
+            :replicate
+            :isPrefixOf))
 
 (in-package :SolveRegion)
 
@@ -160,7 +161,7 @@
                 (fillResult (fillNumber newMatrix num pos newRegion))
                 (returnMat (car fillResult))
                 (returnReg (cadr fillResult))
-                (newPath (append (butlast currentPath) (list (position (list num pos) possibilities)))))
+                (newPath (append (butlast currentPath) (list (position (list num pos) possibilities :test #'equalp)))))
                 (list returnMat returnReg newPath pos)
             )
             (list mat region currentPath lastPosition)
@@ -252,13 +253,13 @@
                 (fillResult (fillNumber mat head pos region))
                 (newMat (car fillResult))
                 (newRegion (cadr fillResult))
-                (currentPath (append path (list (position (list head pos) possibilities))))
+                (currentPath (append path (list (position (list head pos) possibilities :test #'equalp))))
                 (checkResult (checkWrongPaths newMat matRegions currentPath wrongPaths pos newPossiblePositions possibilities head newRegion))
                 (returnMat (car checkResult))
                 (returnReg (cadr checkResult))
                 (newPath (caddr checkResult))
                 (newPosition (cadddr checkResult))
-                (lastPos (list newPosition (position newPosition possiblePositions)))
+                (lastPos (list newPosition (position newPosition possiblePositions :test #'equalp)))
                 (possiblePosNext (removeItemsFromList possiblePositions (list newPosition))))
 
                 (continueBackTrackingTryFillNumber returnMat matRegions numbers possiblePosNext returnReg possibilities newPath errorList wrongPaths lastPos)

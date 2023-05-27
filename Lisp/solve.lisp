@@ -54,7 +54,7 @@
 (defun tryAgainSameRegion (mat matRegions regions regionsPaths puzzleErrorList possiblePositions)
     (let* (
         (failedPath (last regionsPaths))
-        (newRegionsPath (butlast regionsPaths))
+        (newRegionsPath (butlast regionsPaths)) ;; pop
         (newPuzzleErrorList (changePuzzleErrorList puzzleErrorList newRegionsPath failedPath)))
 
         (if (> (length failedPath) 0)
