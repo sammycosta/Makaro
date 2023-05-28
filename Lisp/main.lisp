@@ -1,4 +1,3 @@
-(require "Matrix" "./matrix.lisp")
 (require "PosUtils" "./positionUtils.lisp")
 (require "ReadPuzzle" "./readpuzzle.lisp")
 (require "Validations" "./validations.lisp")

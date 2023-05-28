@@ -15,7 +15,7 @@
         (isCurrentError (and (> order 0) (> lenErrorList 0) (equal (car currentError) regionsPaths)))
         (isFirstRegionError (and (= order 0) (> lenErrorList 0))))
 
-        (if (or currentError isFirstRegionError)
+        (if (or isCurrentError isFirstRegionError)
             (cadr currentError)
             '()
         )

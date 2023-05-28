@@ -109,7 +109,7 @@
 
 ;; Chama fillMissingTwo e fillMissingOne e retorna o resultado 
 (defun certainties (mat_n_reg)
-    (let ((mat (car mat_n_reg)) (regions (cadr mat_n_reg)))
+    (let ((regions (cadr mat_n_reg)))
         (if (null regions)
             mat_n_reg
             (fillMissingTwo 0 (fillMissingOne 0 mat_n_reg))

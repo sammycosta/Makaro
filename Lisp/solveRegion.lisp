@@ -227,7 +227,6 @@
 (defun backtrackingTryFillNumber (mat matRegions numbers possiblePositions region possibilities path errorList wrongPaths)
     (let* (
         (head (car numbers))
-        (tail (cdr numbers))
         (newPossiblePositions (removeErrorPositions path errorList possiblePositions))
         (tryFillResult (tryFillNumber mat matRegions head newPossiblePositions region))
         (succeeded (car tryFillResult))
@@ -280,7 +279,6 @@
         (fillResult (fillWholeRegion mat matRegions possibleNumbers possiblePositions region possibilities '() errorList wrongPaths))
         (succeeded (car fillResult))
         (newMat (cadr fillResult))
-        (newReg (caddr fillResult))
         (newPath (cadddr fillResult))
         (newRegPaths (append regionsPaths (list newPath))))
 
