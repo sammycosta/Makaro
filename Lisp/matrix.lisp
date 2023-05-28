@@ -16,11 +16,13 @@
 
 (in-package :Matrix)
 
+;; Struct que indica uma posição
 (defstruct myposition
     row
     col
 )
 
+;; Função que chama a criação de uma struct myposition
 (defun makePosition (row col)
     (make-myposition
         :row row
@@ -28,12 +30,15 @@
     )
 )
 
+;; Função que acessa o elemento row da struct myposition e o retorna
 (defun positionRow (pos)
   (myposition-row pos))
 
+;; Função que acessa o elemento col da struct myposition e o retorna
 (defun positionCol (pos)
   (myposition-col pos))
 
+;; Retorna uma linha da matriz (uma lista)
 (defun getRow (matrix row)
     (if (null matrix)
         (error "Empty")
@@ -44,6 +49,7 @@
     )
 )
 
+;; Retorna o número de linhas da matriz
 (defun getRowsNumber (matrix)
     (if (null matrix)
         0
@@ -51,6 +57,7 @@
     )
 )
 
+;; Retorna o número de colunas de uma linha específica da matriz
 (defun getColumnsNumber (matrix row)
     (if (null matrix)
         0
@@ -61,10 +68,12 @@
     )
 )
 
+;; Retorna o elemento em uma posição (myposition) da matriz
 (defun getElement (matrix pos)
     (nth (myposition-col pos) (nth (myposition-row pos) matrix))
 )
 
+;; Função auxiliar que muda o elemento em uma posição da lista
 (defun changeElementList (list i value)
     (if (null list)
         (error "Empty")
@@ -75,6 +84,7 @@
     )
 )
 
+;; Muda o elemento em uma posição da matriz (lista de listas) e retorna a nova matriz
 (defun changeElement (matrix pos value)
     (if (null matrix)
         (error "Empty")
@@ -98,6 +108,7 @@
     )
 )
 
+;; Função auxiliar que adiciona um elemento em uma posição da lista
 (defun addElementList (list i value)
     (if (null list)
         (cons value ())
@@ -108,6 +119,7 @@
     )
 )
 
+;; Adiciona um elemento em uma posição da matriz (lista de listas) e retorna a nova matriz
 (defun addElement (matrix pos value)
     (if (null matrix)
         (cons (cons value ()) () )
@@ -115,8 +127,6 @@
             ((or (< (myposition-row pos) 0) 
                  (< (myposition-col pos) 0) 
                  (> (myposition-row pos) (list-length matrix))
-                ;;  (and (< (myposition-row pos) (list-length matrix)) 
-                ;;     (> (myposition-col pos) (list-length (nth (myposition-col pos) matrix))))
                 ) 
                (error "Index out of bounds"))
             ((= (myposition-row pos) (list-length matrix))
@@ -138,6 +148,7 @@
     )
 )
 
+;; Função que printa a matriz (lista de listas) na tela
 (defun printMatrix (matrix)
   (dolist (row matrix)
     (format t "~{~a~^ ~}~%" row)))
