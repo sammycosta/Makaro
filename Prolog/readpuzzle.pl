@@ -1,0 +1,72 @@
+:- module(readpuzzle, [read_file/2, get_size/2, get_string_matrix/3, get_first/2, get_tail/2, get_int_matrix/3]).
+
+
+% Primeira leitura do arquivo 
+read_file(File, Puzzle) :-
+    open(File, read, Stream),
+    read_file_lines(Stream, Puzzle),
+    close(Stream).
+
+read_file_lines(Stream, Lines) :-
+    at_end_of_stream(Stream),
+    !,
+    Lines = [].
+read_file_lines(Stream, [Line|Rest]) :-
+    read_line(Stream, Line),
+    read_file_lines(Stream, Rest).
+
+read_line(Stream, Line) :-
+    read_line_to_codes(Stream, LineCodes),
+    atom_codes(LineAtom, LineCodes),
+    atomic_list_concat(LineList, ' ', LineAtom),
+    maplist(atom_string, LineList, Line).
+
+% Funções de parsing da lista inicial adquirida do arquivo
+
+get_size([H|T], X) :-
+    get_first(H, V),
+    atom_number(V, X).
+
+get_first([H|_], H).
+
+get_tail([_|T], T).
+
+get_string_matrix(1, [H|_], [H]).
+
+get_string_matrix(N, [H|T], [H|L2]) :- 
+    N > 1,
+    N2 is N-1,
+    get_string_matrix(N2, T, L2).
+
+
+string_list_to_int_list([], []).
+
+string_list_to_int_list([String|Rest], [Int|Result]) :-
+    number_string(Int, String),
+    string_list_to_int_list(Rest, Result).
+
+get_int_matrix(1, [H|_], [H2]) :- 
+    string_list_to_int_list(H, H2).
+
+get_int_matrix(N, [H|T], [H2|L2]) :- 
+    N > 1,
+    N2 is N-1,
+    string_list_to_int_list(H, H2),
+    get_int_matrix(N2, T, L2).
+
+% insert_element(X, L, [X|L]).
+
+% -------------------------------------------------
+
+is_letter(L, Is_let) :-
+    member(L, ['R', 'L', 'D', 'U', 'X']).
+
+region_number(Region, N) :-
+    number_string(N2, Region),
+    N is N2-1. 
+
+new_region(C, Regions) :-
+    number_string(C, Num),
+    length(Regions, Len),
+    Num > Len,
+    add_element(Regions, [0, 0], [0, 0])
