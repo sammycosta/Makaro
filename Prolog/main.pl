@@ -14,7 +14,7 @@ drop([_|T], N, Sublist) :-
 
 main :-
     load_modules,
-    read_file('../puzzle_01.txt', File_Result), writeln(File_Result),
+    read_file('./puzzle/puzzle_01.txt', File_Result), writeln(File_Result),
     get_size(File_Result, N), writeln(N),
     get_tail(File_Result, Tail),
     get_string_matrix(N, Tail, Regions_matrix), writeln(Regions_matrix),

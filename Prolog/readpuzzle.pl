@@ -42,7 +42,11 @@ get_string_matrix(N, [H|T], [H|L2]) :-
 string_list_to_int_list([], []).
 
 string_list_to_int_list([String|Rest], [Int|Result]) :-
-    number_string(Int, String),
+    atom_string(Atom, String),
+    (   Atom = '_'
+    ->  Int = _
+    ;   number_string(Int, String)
+    ),
     string_list_to_int_list(Rest, Result).
 
 get_int_matrix(1, [H|_], [H2]) :- 
@@ -65,8 +69,8 @@ region_number(Region, N) :-
     number_string(N2, Region),
     N is N2-1. 
 
-new_region(C, Regions) :-
-    number_string(C, Num),
-    length(Regions, Len),
-    Num > Len,
-    add_element(Regions, [0, 0], [0, 0])
+% new_region(C, Regions) :-
+%     number_string(C, Num),
+%     length(Regions, Len),
+%     Num > Len,
+%     add_element(Regions, [0, 0], [0, 0])

@@ -5,3 +5,5 @@
 
 
 % Talvez para as regras basicamente vão ter regras simples e daí vai juntando regras
+
+
