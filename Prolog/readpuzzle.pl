@@ -58,6 +58,7 @@ get_int_matrix(N, [H|T], [H2|L2]) :-
     string_list_to_int_list(H, H2),
     get_int_matrix(N2, T, L2).
 
+
 % insert_element(X, L, [X|L]).
 
 % -------------------------------------------------

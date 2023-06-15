@@ -13,22 +13,6 @@ drop([_|T], N, Sublist) :-
     N1 is N - 1,
     drop(T, N1, Sublist).
 
-ocr(_, [], 0) :- !.
-ocr(X, [Element|Rs], V) :-
-    atom_string(AtomX, X),
-    atom_string(AtomElement, Element),
-    AtomX = AtomElement,
-    ocr(X, Rs, Ocr),
-    V is 1 + Ocr.
-ocr(X, [_|Rs], V) :-
-    ocr(X, Rs, V).
-
-% Quantidade de elementos em uma região
-region_size(_, [], 0) :- !.
-region_size(Region_number, [Head|Tail], Total_size) :-
-    ocr(Region_number, Head, Line_ocurr),
-    region_size(Region_number, Tail, Total_size2),
-    Total_size is Line_ocurr + Total_size2.
 
 main :-
     load_modules,
@@ -38,6 +22,14 @@ main :-
     get_string_matrix(N, Tail, Regions_matrix),
     sublist_from_index(N, Tail, Tail2),
     get_int_matrix(N, Tail2, Certainties_matrix), writeln(Certainties_matrix),
-    writeln(Regions_matrix),
+    % regions_matrix(Regions_matrix),
+    % writeln(Regions_matrix),
+    % problem(Certainties_matrix),
+    % writeln(Certainties_matrix),
     region_size(7, Regions_matrix, Total_size), writeln(Total_size),
-    makaro(Certainties_matrix).    % halt.
+    max_regions(Regions_matrix, Max),
+    get_all_regions(Regions_matrix, Max, 1, Regions_max),
+    % writeln(Max),
+    writeln(Regions_max),
+    makaro(Certainties_matrix, Regions_matrix, Regions_max, Result),
+    writeln(Result).    % halt.
