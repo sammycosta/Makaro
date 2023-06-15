@@ -63,15 +63,3 @@ get_int_matrix(N, [H|T], [H2|L2]) :-
 
 % -------------------------------------------------
 
-is_letter(L, Is_let) :-
-    member(L, ['R', 'L', 'D', 'U', 'X']).
-
-region_number(Region, N) :-
-    number_string(N2, Region),
-    N is N2-1. 
-
-% new_region(C, Regions) :-
-%     number_string(C, Num),
-%     length(Regions, Len),
-%     Num > Len,
-%     add_element(Regions, [0, 0], [0, 0])

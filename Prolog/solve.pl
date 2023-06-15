@@ -68,11 +68,22 @@ string_to_int(String, Number) :-
 
 get_domain(List_of_regions, Value, N) :-
     string_to_int(Value, Int_value),
-    Position is Int_value - 1,
-    nth0(Position, List_of_regions, Lim),
-    N #>= 1,
-    N #=< Lim.
-    % N in 1..Lim.
+    % Position is Int_value - 1,
+    % nth0(Position, List_of_regions, Lim),
+    writeln(Int_value),
+    Int_value > 0,
+    nth1(Int_value, List_of_regions, Lim),
+    writeln(Lim),
+    % N #>= 1,
+    % N #=< Lim.
+    N in 1..Lim.
+
+get_domain(List_of_regions, Value, 0) :-
+    string_to_int(Value, Int_value),
+    % Position is Int_value - 1,
+    % nth0(Position, List_of_regions, Lim),
+    writeln(Int_value),
+    Int_value =:= 0.
 
 domain(List_of_regions, Value, N) :-
     get_domain(List_of_regions, Value, N).
@@ -97,16 +108,25 @@ max_regions(Regions, Max_number_regions) :-
     max_list(Flat_regions, Max_number_regions).
 
 indices(List, E, Is) :-
+    % number_string(E1, E),
     findall(N, nth0(N, List, E), Is).
 
 enesimo([H|_], H, 0) :- !.
 enesimo([_|T], X, I) :- I >= 0, I2 is I - 1, enesimo(T,X,I2), !.
 
-atGrupo(ListaMatriz, ListaGrupo, Grupo) :- indices(ListaGrupo, Grupo, PosicoesGr),                          
-                                           maplist(enesimo(ListaMatriz), ElemGr, PosicoesGr),
-                                           all_distinct(ElemGr).
+atRegion(ListMatrix, Regions, Reg) :- 
+    indices(Regions, Reg, Positions_reg),   
+    writeln(Positions_reg),                                                     
+    maplist(enesimo(ListMatrix), Elem_reg, Positions_reg),
+    all_distinct(Elem_reg).
 
-makaro(Board, Regions_matrix, List_of_regions, Result) :-
+list_to_matrix([], _, []).
+list_to_matrix(List, Size, [Row|MatrixRest]) :-
+    length(Row, Size),
+    append(Row, Rest, List),
+    list_to_matrix(Rest, Size, MatrixRest).
+
+makaro(Board, Regions_matrix, List_of_regions, Mat_result) :-
     length(Board, L),
     append(Board, Flat_Board),
     append(Regions_matrix, Flat_regions),
@@ -115,15 +135,21 @@ makaro(Board, Regions_matrix, List_of_regions, Result) :-
 
     length(List_of_regions, Max),
     numlist(1, Max, Groups),
-    maplist([Value, N]>>(domain(List_of_regions, Value, N)), Flat_regions, Result).
+    maplist(domain(List_of_regions), Flat_regions, Result),
     
-    % length(List_of_regions, Max),
-    % numlist(1, Max, Groups),
-        
-    % maplist(atGrupo(Result, Flat_regions), Groups),
+    writeln(Result),
+    length(List_of_regions, Max),
+    numlist(1, Max, Regs),
+    maplist(number_string, Regs, Regs_str),
+    writeln(Flat_regions),
 
-    % Result = Flat_Board,
-    % maplist(label, Result).
+    % string_matrix_to_int_matrix(Flat_regions, Int_regions),
+        
+    maplist(atRegion(Result, Flat_regions), Regs_str),
+
+    Result = Flat_Board,
+    list_to_matrix(Result, L, Mat_result),
+    maplist(label, Mat_result).
 
     % string_matrix_to_number_matrix(Regions_matrix, Number_regions),
     % writeln(Number_regions),

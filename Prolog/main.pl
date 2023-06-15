@@ -32,4 +32,4 @@ main :-
     % writeln(Max),
     writeln(Regions_max),
     makaro(Certainties_matrix, Regions_matrix, Regions_max, Result),
-    writeln(Result).    % halt.
+    maplist(portray_clause, Result).   % halt.
