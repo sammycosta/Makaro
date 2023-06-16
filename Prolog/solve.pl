@@ -1,6 +1,7 @@
 :- module(solve, [makaro/4, region_size/3, max_regions/2, get_regions_sizes/4]).
 :- use_module(library(clpfd)).
 
+% Quantidade de ocorrências de um elemento em uma lista
 ocr(_, [], 0) :- !.
 ocr(X, [Element|Rs], V) :-
     atom_string(AtomX, X),
@@ -18,6 +19,7 @@ region_size(Region_number, [Head|Tail], Total_size) :-
     region_size(Region_number, Tail, Total_size2),
     Total_size is Line_ocurr + Total_size2.
 
+% Transforma uma matriz de string em uma matriz de int
 string_matrix_to_int_matrix([], []).
 string_matrix_to_int_matrix([Row|Rest], [NumberRow|NumberRest]) :-
   maplist(string_to_int, Row, NumberRow),
@@ -47,7 +49,7 @@ max_regions(Regions, Max_number_regions) :-
     append(Int_reg, Flat_regions),
     max_list(Flat_regions, Max_number_regions).
 
-% Retorna uma lista com o tamanho de cada região
+% Retorna uma lista com o tamanho de cada região, em ordem crescente
 get_regions_sizes(_, Max_number, Number, []) :- !
     Max_number < Number.
 get_regions_sizes(Regions_matrix, Max_number, Number, [Region_value]) :-
@@ -59,7 +61,7 @@ get_regions_sizes(Regions_matrix, Max_number, Number, [Region_value|List_of_regi
     Num2 is Number + 1,
     get_regions_sizes(Regions_matrix, Max_number, Num2, List_of_regions).
 
-% 
+% Retorna todos os índices nos quais um elemnto é encontrado em uma lista
 indices(List, E, Is) :-
     findall(N, nth0(N, List, E), Is).
 
@@ -67,6 +69,7 @@ indices(List, E, Is) :-
 enesimo([H|_], H, 0) :- !.
 enesimo([_|T], X, I) :- I >= 0, I2 is I - 1, enesimo(T,X,I2), !.
 
+% Condição para que os elementos de uma mesma região sejam distintos
 at_region(Domains_list, Regions, Reg) :- 
     indices(Regions, Reg, Positions_reg),   % Listas com as posições de cada região 
     % writeln(Positions_reg),
@@ -74,6 +77,7 @@ at_region(Domains_list, Regions, Reg) :-
     maplist(enesimo(Domains_list), Elem_reg, Positions_reg),
     all_distinct(Elem_reg).
 
+% Tranforma uma lista em uma matriz, dado o tamanho 
 list_to_matrix([], _, []).
 list_to_matrix(List, Size, [Row|MatrixRest]) :-
     length(Row, Size),
@@ -160,7 +164,7 @@ makaro(Board, Regions_matrix, Regions_sizes, Mat_result) :-
 
     Domains_list = Flat_board, %  Como ela é atualizada?
 
-    % Aplica regra das adjacências liniha por linha da matriz, e então transpõe e aplica nas colunas
+    % Aplica regra das adjacências linha por linha da matriz, e então transpõe e aplica nas colunas
     list_to_matrix(Domains_list, L, Initial_result),
     maplist(check_adjacent_distinct, Initial_result),
     transpose(Initial_result, Transposed_board),
