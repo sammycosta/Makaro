@@ -69,7 +69,7 @@ enesimo([_|T], X, I) :- I >= 0, I2 is I - 1, enesimo(T,X,I2), !.
 
 at_region(Domains_list, Regions, Reg) :- 
     indices(Regions, Reg, Positions_reg),   % Listas com as posições de cada região 
-    writeln(Positions_reg),
+    % writeln(Positions_reg),
     % Aplica domínio da região... Ver melhor...                                                 
     maplist(enesimo(Domains_list), Elem_reg, Positions_reg),
     all_distinct(Elem_reg).
@@ -79,6 +79,16 @@ list_to_matrix(List, Size, [Row|MatrixRest]) :-
     length(Row, Size),
     append(Row, Rest, List),
     list_to_matrix(Rest, Size, MatrixRest).
+
+% Aplica a regra em uma lista de que um elemento não deve ser igual ao do lado
+check_adjacent_distinct([]).
+check_adjacent_distinct([_]).
+check_adjacent_distinct([X, Y | Rest]) :-
+    (X #= 0 ; Y #= 0), % Não deve contar os 0 nisso
+    check_adjacent_distinct([Y | Rest]).
+check_adjacent_distinct([X, Y | Rest]) :-
+    X #\= Y,
+    check_adjacent_distinct([Y | Rest]).
 
 % Resolve o puzzle
 makaro(Board, Regions_matrix, Regions_sizes, Mat_result) :-
@@ -97,7 +107,15 @@ makaro(Board, Regions_matrix, Regions_sizes, Mat_result) :-
     maplist(at_region(Domains_list, Flat_regions), Regs_str),
 
     Domains_list = Flat_board, %  Como ela é atualizada?
-    list_to_matrix(Domains_list, L, Mat_result),
+
+    % Aplica regra das adjacências liniha por linha da matriz, e então transpõe e aplica nas colunas
+    list_to_matrix(Domains_list, L, Initial_result),
+    maplist(check_adjacent_distinct, Initial_result),
+    transpose(Initial_result, Transposed_board),
+    maplist(check_adjacent_distinct, Transposed_board),
+    transpose(Transposed_board, Mat_result),
+
+
     maplist(label, Mat_result).
 
     % string_matrix_to_number_matrix(Regions_matrix, Number_regions),
