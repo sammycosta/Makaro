@@ -90,13 +90,65 @@ check_adjacent_distinct([X, Y | Rest]) :-
     X #\= Y,
     check_adjacent_distinct([Y | Rest]).
 
+arrow_positions(Regions_matrix, Arrow_positions) :-
+    Arrows = ['D', 'U', 'L', 'R'],
+    findall((Row, Col), (
+        nth0(Row, Regions_matrix, Row_list),
+        nth0(Col, Row_list, Value),
+        member(Value, Arrows)
+    ), Arrow_positions).
+
+
+check_bounds(N, Row, Col) :-
+    Row >= 0,
+    Col >= 0,
+    Row < N,
+    Col < N.
+
+element_within_bounds(N, Row, Col, Matrix, Value) :-
+    check_bounds(N, Row, Col),
+    nth0(Row, Matrix, RowList),
+    nth0(Col, RowList, Value).
+element_within_bounds(_, _, _, _, 0).
+
+
+apply_arrow_rule(N, Mat_result, Str_regions, (Row, Col)) :-
+    nth0(Row, Str_regions, RowList),
+    nth0(Col, RowList, Arrow),
+    RowAbove is Row - 1,
+    RowBelow is Row + 1,
+    ColLeft is Col - 1,
+    ColRight is Col + 1,
+
+    element_within_bounds(N, RowAbove, Col, Mat_result, ValueAbove),
+    element_within_bounds(N, RowBelow, Col, Mat_result, ValueBelow),
+    element_within_bounds(N, Row, ColLeft, Mat_result, ValueLeft),
+    element_within_bounds(N, Row, ColRight, Mat_result, ValueRight),
+    (
+        Arrow = 'D' ->
+            ValueBelow #> ValueAbove, ValueBelow #> ValueLeft, ValueBelow #> ValueRight
+        ;
+        Arrow = 'U' ->
+            ValueAbove #> ValueBelow, ValueAbove #> ValueLeft, ValueAbove #> ValueRight
+        ;
+        Arrow = 'L' ->
+            ValueLeft #> ValueAbove, ValueLeft #> ValueBelow, ValueLeft #> ValueRight
+        ;
+        Arrow = 'R' ->
+            ValueRight #> ValueAbove, ValueRight #> ValueBelow, ValueRight #> ValueLeft
+        ;
+        true % Caso padrão quando a seta não é reconhecida
+    ).
+
+
 % Resolve o puzzle
 makaro(Board, Regions_matrix, Regions_sizes, Mat_result) :-
     length(Board, L),
     append(Board, Flat_board),
     append(Regions_matrix, Flat_regions),
-    % writeln(Flat_regions),
-    % writeln(Flat_board),
+
+    % % writeln(Flat_regions),
+    % % writeln(Flat_board),
     maplist(domain(Regions_sizes), Flat_regions, Domains_list),
     
     length(Regions_sizes, Max), % Max = número de regiões
@@ -115,7 +167,15 @@ makaro(Board, Regions_matrix, Regions_sizes, Mat_result) :-
     maplist(check_adjacent_distinct, Transposed_board),
     transpose(Transposed_board, Mat_result),
 
+    % Posições das setas
+    maplist(atom_string, Str_flat_regions, Flat_regions), % Transforma em string pois não encontrava 'D', etc
+    list_to_matrix(Str_flat_regions, L, Str_regions),
+    arrow_positions(Str_regions, Positions_arrows),
+    % writeln(Positions_arrows),
 
+    % apply_arrow_rule(L, Mat_result, Str_regions, (3,6)),
+    maplist(apply_arrow_rule(L, Mat_result, Str_regions), Positions_arrows).
+    
     maplist(label, Mat_result).
 
     % string_matrix_to_number_matrix(Regions_matrix, Number_regions),
