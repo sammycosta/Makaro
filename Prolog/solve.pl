@@ -1,4 +1,4 @@
-:- module(solve, [makaro/4, region_size/3, max_regions/2, get_regions_sizes/4]).
+:- module(solve, [solve_makaro/4, region_size/3, max_regions/2, get_regions_sizes/4]).
 :- use_module(library(clpfd)).
 
 % Quantidade de ocorrências de um elemento em uma lista
@@ -39,10 +39,6 @@ get_domain(_, Value, 0) :-
     string_to_int(Value, IntValue),
     IntValue =:= 0.
 
-% Precisa ter essa função? Não seria só usar a get_domain?
-domain(RegionsSizes, Value, N) :-
-    get_domain(RegionsSizes, Value, N).
-
 % Retorna o número total de regiões
 max_regions(Regions, MaxNumberRegions) :-
     string_matrix_to_int_matrix(Regions, IntReg),
@@ -82,11 +78,11 @@ list_to_matrix(List, Size, [Row|MatrixRest]) :-
     append(Row, Rest, List),
     list_to_matrix(Rest, Size, MatrixRest).
 
-% Aplica a regra em uma lista de que um elemento não deve ser igual ao do lado
+% Condição que os elementos adjacentes de uma lista sejam distintos sem contar com o 0
 check_adjacent_distinct([]).
 check_adjacent_distinct([_]).
 check_adjacent_distinct([X, Y | Rest]) :-
-    (X #= 0 ; Y #= 0), % Não deve contar os 0 nisso
+    (X #= 0 ; Y #= 0),
     check_adjacent_distinct([Y | Rest]).
 check_adjacent_distinct([X, Y | Rest]) :-
     X #\= Y,
@@ -124,7 +120,6 @@ apply_arrow_rule(N, MatResult, StrRegions, (Row, Col)) :-
     RowBelow is Row + 1,
     ColLeft is Col - 1,
     ColRight is Col + 1,
-
     element_within_bounds(N, RowAbove, Col, MatResult, ValueAbove),
     element_within_bounds(N, RowBelow, Col, MatResult, ValueBelow),
     element_within_bounds(N, Row, ColLeft, MatResult, ValueLeft),
@@ -145,14 +140,13 @@ apply_arrow_rule(N, MatResult, StrRegions, (Row, Col)) :-
         true
     ).
 
-
 % Resolve o puzzle
-makaro(Board, RegionsMatrix, RegionsSizes, MatResult) :-
+solve_makaro(Board, RegionsMatrix, RegionsSizes, MatResult) :-
     length(Board, L),
     append(Board, FlatBoard),
     append(RegionsMatrix, FlatRegions),
 
-    maplist(domain(RegionsSizes), FlatRegions, DomainsList),
+    maplist(get_domain(RegionsSizes), FlatRegions, DomainsList),
     
     length(RegionsSizes, Max), % Max = número de regiões
     numlist(1, Max, Regs), % Lista de 1 a Max
