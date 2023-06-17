@@ -156,11 +156,10 @@ solve_makaro(Board, RegionsMatrix, RegionsSizes, MatResult) :-
     DomainsList = FlatBoard,
 
     % Aplica regra das adjacências linha por linha da matriz, e então transpõe e aplica nas colunas
-    list_to_matrix(DomainsList, L, InitialResult),
-    maplist(check_adjacent_distinct, InitialResult),
-    transpose(InitialResult, TransposedBoard),
+    list_to_matrix(DomainsList, L, MatResult),
+    maplist(check_adjacent_distinct, MatResult),
+    transpose(MatResult, TransposedBoard),
     maplist(check_adjacent_distinct, TransposedBoard),
-    transpose(TransposedBoard, MatResult),
 
     % Posições das setas e aplicação da regra
     maplist(atom_string, StrFlatRegions, FlatRegions), % Transforma em string pois não encontrava 'D', etc
