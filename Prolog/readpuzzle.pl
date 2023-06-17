@@ -43,7 +43,7 @@ string_list_to_int_list([], []).
 
 string_list_to_int_list([String|Rest], [Int|Result]) :-
     atom_string(Atom, String),
-    (   Atom = '_'
+    (   Atom = '0'
     ->  Int = _
     ;   number_string(Int, String)
     ),
