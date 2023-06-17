@@ -16,15 +16,16 @@ drop([_|T], N, Sublist) :-
 
 
 main :-
+    style_check(-singleton),
     load_modules,
-    read_file('../puzzle_17.txt', File_Result),
-    get_size(File_Result, N),
-    get_tail(File_Result, Tail),
-    get_string_matrix(N, Tail, Regions_matrix),
+    read_file('../puzzle_17.txt', FileResult),
+    get_size(FileResult, N),
+    get_tail(FileResult, Tail),
+    get_string_matrix(N, Tail, RegionsMatrix),
     sublist_from_index(N, Tail, Tail2),
-    get_int_matrix(N, Tail2, Certainties_matrix),
-    max_regions(Regions_matrix, Max),
-    get_regions_sizes(Regions_matrix, Max, 1, Regions_sizes),
-    makaro(Certainties_matrix, Regions_matrix, Regions_sizes, Result),
+    get_int_matrix(N, Tail2, CertaintiesMatrix),
+    max_regions(RegionsMatrix, Max),
+    get_regions_sizes(RegionsMatrix, Max, 1, RegionsSizes),
+    makaro(CertaintiesMatrix, RegionsMatrix, RegionsSizes, Result),
     maplist(portray_clause, Result),
     halt.

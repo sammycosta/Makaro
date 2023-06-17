@@ -1,2 +1,2 @@
 main: main.pl
-	swipl main.pl -g main -t halt
+	swipl -s main.pl -g main -t halt

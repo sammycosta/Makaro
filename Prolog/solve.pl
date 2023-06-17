@@ -14,10 +14,10 @@ ocr(X, [_|Rs], V) :-
 
 % Quantidade de elementos em uma região
 region_size(_, [], 0) :- !.
-region_size(Region_number, [Head|Tail], Total_size) :-
-    ocr(Region_number, Head, Line_ocurr),
-    region_size(Region_number, Tail, Total_size2),
-    Total_size is Line_ocurr + Total_size2.
+region_size(RegionNumber, [Head|Tail], TotalSize) :-
+    ocr(RegionNumber, Head, LineOcurr),
+    region_size(RegionNumber, Tail, TotalSize2),
+    TotalSize is LineOcurr + TotalSize2.
 
 % Transforma uma matriz de string em uma matriz de int
 string_matrix_to_int_matrix([], []).
@@ -30,52 +30,50 @@ string_to_int(String, Number) :-
   (catch(number_string(Number, String), _, fail) -> true ; Number = 0).
 
 % Retorna o domínio de uma região baseado no seu tamanho
-get_domain(Regions_sizes, Value, N) :-
-    string_to_int(Value, Int_value),
-    Int_value > 0,
-    nth1(Int_value, Regions_sizes, Lim),
+get_domain(RegionsSizes, Value, N) :-
+    string_to_int(Value, IntValue),
+    IntValue > 0,
+    nth1(IntValue, RegionsSizes, Lim),
     N in 1..Lim.
-get_domain(Regions_sizes, Value, 0) :-
-    string_to_int(Value, Int_value),
-    Int_value =:= 0.
+get_domain(_, Value, 0) :-
+    string_to_int(Value, IntValue),
+    IntValue =:= 0.
 
 % Precisa ter essa função? Não seria só usar a get_domain?
-domain(Regions_sizes, Value, N) :-
-    get_domain(Regions_sizes, Value, N).
+domain(RegionsSizes, Value, N) :-
+    get_domain(RegionsSizes, Value, N).
 
 % Retorna o número total de regiões
-max_regions(Regions, Max_number_regions) :-
-    string_matrix_to_int_matrix(Regions, Int_reg),
-    append(Int_reg, Flat_regions),
-    max_list(Flat_regions, Max_number_regions).
+max_regions(Regions, MaxNumberRegions) :-
+    string_matrix_to_int_matrix(Regions, IntReg),
+    append(IntReg, FlatRegions),
+    max_list(FlatRegions, MaxNumberRegions).
 
 % Retorna uma lista com o tamanho de cada região, em ordem crescente
-get_regions_sizes(_, Max_number, Number, []) :- !
-    Max_number < Number.
-get_regions_sizes(Regions_matrix, Max_number, Number, [Region_value]) :-
-    Max_number =:= Number,
-    region_size(Number, Regions_matrix, Region_value).
-get_regions_sizes(Regions_matrix, Max_number, Number, [Region_value|List_of_regions]) :-
-    Max_number > Number,
-    region_size(Number, Regions_matrix, Region_value),
+get_regions_sizes(_, MaxNumber, Number, []) :-
+    MaxNumber < Number, !.
+get_regions_sizes(RegionsMatrix, MaxNumber, Number, [RegionValue]) :-
+    MaxNumber =:= Number,
+    region_size(Number, RegionsMatrix, RegionValue).
+get_regions_sizes(RegionsMatrix, MaxNumber, Number, [RegionValue|ListOfRegions]) :-
+    MaxNumber > Number,
+    region_size(Number, RegionsMatrix, RegionValue),
     Num2 is Number + 1,
-    get_regions_sizes(Regions_matrix, Max_number, Num2, List_of_regions).
+    get_regions_sizes(RegionsMatrix, MaxNumber, Num2, ListOfRegions).
 
 % Retorna todos os índices nos quais um elemnto é encontrado em uma lista
-indices(List, E, Is) :-
+indexes(List, E, Is) :-
     findall(N, nth0(N, List, E), Is).
 
-% Extrai o elemento de uma determinada posição de uma lista? entender isso aqui...
-enesimo([H|_], H, 0) :- !.
-enesimo([_|T], X, I) :- I >= 0, I2 is I - 1, enesimo(T,X,I2), !.
+% Extrai o elemento de uma determinada posição de uma lista
+nth([H|_], H, 0) :- !.
+nth([_|T], X, I) :- I >= 0, I2 is I - 1, nth(T,X,I2), !.
 
 % Condição para que os elementos de uma mesma região sejam distintos
-at_region(Domains_list, Regions, Reg) :- 
-    indices(Regions, Reg, Positions_reg),   % Listas com as posições de cada região 
-    % writeln(Positions_reg),
-    % Aplica domínio da região... Ver melhor...                                                 
-    maplist(enesimo(Domains_list), Elem_reg, Positions_reg),
-    all_distinct(Elem_reg).
+apply_region_rule(DomainsList, Regions, Reg) :- 
+    indexes(Regions, Reg, PositionsReg),                                   
+    maplist(nth(DomainsList), ElemReg, PositionsReg),
+    all_distinct(ElemReg).
 
 % Tranforma uma lista em uma matriz, dado o tamanho 
 list_to_matrix([], _, []).
@@ -94,40 +92,43 @@ check_adjacent_distinct([X, Y | Rest]) :-
     X #\= Y,
     check_adjacent_distinct([Y | Rest]).
 
-arrow_positions(Regions_matrix, Arrow_positions) :-
+% Retorna posições que possuem seta
+arrow_positions(RegionsMatrix, ArrowPositions) :-
     Arrows = ['D', 'U', 'L', 'R'],
     findall((Row, Col), (
-        nth0(Row, Regions_matrix, Row_list),
-        nth0(Col, Row_list, Value),
+        nth0(Row, RegionsMatrix, RowList),
+        nth0(Col, RowList, Value),
         member(Value, Arrows)
-    ), Arrow_positions).
+    ), ArrowPositions).
 
-
+% Verifica se uma posição está dentro dos limites da matriz
 check_bounds(N, Row, Col) :-
     Row >= 0,
     Col >= 0,
     Row < N,
     Col < N.
 
+% Retorna o elemento na posição da matriz caso esteja dentro dos limites, 0 caso contrário
 element_within_bounds(N, Row, Col, Matrix, Value) :-
     check_bounds(N, Row, Col),
+    !,
     nth0(Row, Matrix, RowList),
     nth0(Col, RowList, Value).
 element_within_bounds(_, _, _, _, 0).
 
-
-apply_arrow_rule(N, Mat_result, Str_regions, (Row, Col)) :-
-    nth0(Row, Str_regions, RowList),
+% Aplica regra onde a maior posição deve ser a apontada pela seta
+apply_arrow_rule(N, MatResult, StrRegions, (Row, Col)) :-
+    nth0(Row, StrRegions, RowList),
     nth0(Col, RowList, Arrow),
     RowAbove is Row - 1,
     RowBelow is Row + 1,
     ColLeft is Col - 1,
     ColRight is Col + 1,
 
-    element_within_bounds(N, RowAbove, Col, Mat_result, ValueAbove),
-    element_within_bounds(N, RowBelow, Col, Mat_result, ValueBelow),
-    element_within_bounds(N, Row, ColLeft, Mat_result, ValueLeft),
-    element_within_bounds(N, Row, ColRight, Mat_result, ValueRight),
+    element_within_bounds(N, RowAbove, Col, MatResult, ValueAbove),
+    element_within_bounds(N, RowBelow, Col, MatResult, ValueBelow),
+    element_within_bounds(N, Row, ColLeft, MatResult, ValueLeft),
+    element_within_bounds(N, Row, ColRight, MatResult, ValueRight),
     (
         Arrow = 'D' ->
             ValueBelow #> ValueAbove, ValueBelow #> ValueLeft, ValueBelow #> ValueRight
@@ -141,54 +142,36 @@ apply_arrow_rule(N, Mat_result, Str_regions, (Row, Col)) :-
         Arrow = 'R' ->
             ValueRight #> ValueAbove, ValueRight #> ValueBelow, ValueRight #> ValueLeft
         ;
-        true % Caso padrão quando a seta não é reconhecida
+        true
     ).
 
 
 % Resolve o puzzle
-makaro(Board, Regions_matrix, Regions_sizes, Mat_result) :-
+makaro(Board, RegionsMatrix, RegionsSizes, MatResult) :-
     length(Board, L),
-    append(Board, Flat_board),
-    append(Regions_matrix, Flat_regions),
+    append(Board, FlatBoard),
+    append(RegionsMatrix, FlatRegions),
 
-    % % writeln(Flat_regions),
-    % % writeln(Flat_board),
-    maplist(domain(Regions_sizes), Flat_regions, Domains_list),
+    maplist(domain(RegionsSizes), FlatRegions, DomainsList),
     
-    length(Regions_sizes, Max), % Max = número de regiões
-
+    length(RegionsSizes, Max), % Max = número de regiões
     numlist(1, Max, Regs), % Lista de 1 a Max
-    maplist(number_string, Regs, Regs_str),
+    maplist(number_string, Regs, RegsStr),
+    maplist(apply_region_rule(DomainsList, FlatRegions), RegsStr),
 
-    maplist(at_region(Domains_list, Flat_regions), Regs_str),
-
-    Domains_list = Flat_board, %  Como ela é atualizada?
+    DomainsList = FlatBoard,
 
     % Aplica regra das adjacências linha por linha da matriz, e então transpõe e aplica nas colunas
-    list_to_matrix(Domains_list, L, Initial_result),
-    maplist(check_adjacent_distinct, Initial_result),
-    transpose(Initial_result, Transposed_board),
-    maplist(check_adjacent_distinct, Transposed_board),
-    transpose(Transposed_board, Mat_result),
+    list_to_matrix(DomainsList, L, InitialResult),
+    maplist(check_adjacent_distinct, InitialResult),
+    transpose(InitialResult, TransposedBoard),
+    maplist(check_adjacent_distinct, TransposedBoard),
+    transpose(TransposedBoard, MatResult),
 
-    % Posições das setas
-    maplist(atom_string, Str_flat_regions, Flat_regions), % Transforma em string pois não encontrava 'D', etc
-    list_to_matrix(Str_flat_regions, L, Str_regions),
-    arrow_positions(Str_regions, Positions_arrows),
-    % writeln(Positions_arrows),
-
-    % apply_arrow_rule(L, Mat_result, Str_regions, (3,6)),
-    maplist(apply_arrow_rule(L, Mat_result, Str_regions), Positions_arrows).
+    % Posições das setas e aplicação da regra
+    maplist(atom_string, StrFlatRegions, FlatRegions), % Transforma em string pois não encontrava 'D', etc
+    list_to_matrix(StrFlatRegions, L, StrRegions),
+    arrow_positions(StrRegions, PositionsArrows),
+    maplist(apply_arrow_rule(L, MatResult, StrRegions), PositionsArrows).
     
-    maplist(label, Mat_result).
-
-    % string_matrix_to_number_matrix(Regions_matrix, Number_regions),
-    % writeln(Number_regions),
-    % replace_numbers_with_occurrences(Number_regions, Max_matrix).
-    % writeln(Max_matrix).
-    % append(Max_matrix, Max_flat),
-    % writeln(Max_flat).
-    % nth0(0, Max_flat, First),
-    % writeln(First).
-    % number_string(Num, First),
-    % number(Num).
+    maplist(label, MatResult).
