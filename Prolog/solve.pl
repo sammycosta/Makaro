@@ -29,7 +29,7 @@ string_matrix_to_int_matrix([Row|Rest], [NumberRow|NumberRest]) :-
 string_to_int(String, Number) :-
   (catch(number_string(Number, String), _, fail) -> true ; Number = 0).
 
-% Retorna o domínio de uma região baseado no seu tamanho
+% Retorna o domínio de um elemento na região baseado no tamanho da região
 get_domain(RegionsSizes, Value, N) :-
     string_to_int(Value, IntValue),
     IntValue > 0,
